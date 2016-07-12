@@ -59,6 +59,7 @@ class GravatarHelper extends Helper
      */
     public function getImage($email, $size = '250', $default = null)
     {
+        return $this->avatarHelper->getDefaultAvatar(true);
         $localDefault     = ($this->devMode) ?
             'https://www.mautic.org/media/images/default_avatar.png' :
             $this->avatarHelper->getDefaultAvatar(true);
