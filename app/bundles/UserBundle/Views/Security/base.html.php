@@ -12,7 +12,7 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>Mautic</title>
+    <title>ZenMT</title>
     <meta name="robots" content="noindex, nofollow" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="icon" type="image/x-icon" href="<?php echo $view['assets']->getUrl('media/images/favicon.ico') ?>" />
@@ -28,16 +28,7 @@
                 <div class="panel" name="form-login">
                     <div class="panel-body">
                         <div class="mautic-logo img-circle mb-md text-center">
-                            <svg version="1.1" class="mautic-logo-figure" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 128 128" enable-background="new 0 0 128 128" xml:space="preserve">
-                            <path class="circle" d="M64,119.843c-30.937,0-56.108-25.17-56.108-56.108C7.893,32.799,33.063,7.629,64,7.629
-                            c7.474,0,14.734,1.446,21.578,4.301c1.936,0.807,2.85,3.03,2.041,4.964c-0.805,1.937-3.029,2.849-4.963,2.043
-                            C76.742,16.472,70.465,15.221,64,15.221c-26.751,0-48.514,21.763-48.514,48.514c0,26.752,21.763,48.516,48.514,48.516
-                            c26.751,0,48.513-21.764,48.513-48.516c0-5.735-0.988-11.345-2.939-16.677c-0.723-1.968,0.289-4.149,2.258-4.869
-                            c1.971-0.721,4.15,0.291,4.871,2.259c2.258,6.171,3.404,12.661,3.404,19.287C120.107,94.673,94.938,119.843,64,119.843"/>
-                            <polygon class="m" points="88.545,57.987 79.807,67.055 84.664,87.332 95.621,87.332 "/>
-                            <polygon class="m-arrow" points="84.982,31.157 88.004,34.176 63.933,59.605 43.446,38.475 31.664,87.332 42.621,87.332
-                            49.122,60.198 63.933,76.399 95.699,41.815 98.738,44.875 101.75,27.784 "/>
-                            </svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" class="mautic-logo-figure" viewBox="0 0 29.4 29.4"><path d="M14.7,0A14.7,14.7,0,1,0,29.4,14.7,14.7,14.7,0,0,0,14.7,0ZM27.4,14.7a12.6,12.6,0,0,1-1.2,5.5H15.1l8-15A12.7,12.7,0,0,1,27.4,14.7ZM2,14.7A12.6,12.6,0,0,1,3.2,9.2H14.3l-8,15A12.7,12.7,0,0,1,2,14.7ZM14.7,27.4a12.6,12.6,0,0,1-6.8-2L17.6,7.2H4.4A12.7,12.7,0,0,1,21.5,4L11.8,22.2H25A12.7,12.7,0,0,1,14.7,27.4Z" style="fill:#ec6c00"/></svg>
                         </div>
                         <div id="main-panel-flash-msgs">
                             <?php echo $view->render('MauticCoreBundle:Notification:flashes.html.php'); ?>

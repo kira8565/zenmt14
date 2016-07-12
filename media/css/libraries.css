@@ -175,7 +175,7 @@ fieldset[disabled] .btn-default:active,
 .btn-default.disabled.active,
 .btn-default[disabled].active,
 fieldset[disabled] .btn-default.active{background-color:#f5f5f5}.btn-default
-.badge{color:#fff;background-color:#5d6c7c}.btn-default+.dropdown-toggle{border-left-color:#d5d5d5}.btn-primary{color:#fff;background-color:#4e5d9d;border-color:#4e5d9d}.btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active,.open>.dropdown-toggle.btn-primary{color:#fff;background-color:#47558f;border-color:#47558f}.btn-primary:active,.btn-primary.active,.open>.dropdown-toggle.btn-primary{background-image:none}.btn-primary.disabled,
+.badge{color:#fff;background-color:#5d6c7c}.btn-default+.dropdown-toggle{border-left-color:#d5d5d5}.btn-primary{color:#fff;background-color:#EC6C00;border-color:#EC6C00}.btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active,.open>.dropdown-toggle.btn-primary{color:#fff;background-color:#FFBB4C;border-color:#FFBB4C}.btn-primary:active,.btn-primary.active,.open>.dropdown-toggle.btn-primary{background-image:none}.btn-primary.disabled,
 .btn-primary[disabled],
 fieldset[disabled] .btn-primary,
 .btn-primary.disabled:hover,
