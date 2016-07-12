@@ -2,7 +2,7 @@
 $config = array(
 	'name' => 'Chinese Simplified',
 	'locale' => 'zh-Hans',
-	'author' => 'Mautic Translators',
+	'author' => 'ZenMT Translators',
 );
 
 return $config;
