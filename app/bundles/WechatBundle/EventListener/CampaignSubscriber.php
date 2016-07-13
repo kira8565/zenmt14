@@ -38,10 +38,11 @@ class CampaignSubscriber extends CommonSubscriber
             $event->addAction('wechat.send_message', $action);
 
             $trigger = array(
-                'label'           => 'mautic.wechat.campaign.event.follow',
-                'description'     => 'mautic.wechat.campaign.event.follow_descr'
+                'label'           => 'mautic.wechat.campaign.event.account_followed',
+                'description'     => 'mautic.wechat.campaign.event.account_followed_descr',
+                'formType'        => 'accountfollow_list',
             );
-            $event->addLeadDecision('wechat.follow', $trigger);
+            $event->addLeadDecision('wechat.account_followed', $trigger);
 
             $trigger = array(
                 'label'           => 'mautic.wechat.campaign.event.message_received',

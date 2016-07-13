@@ -32,6 +32,16 @@ return array(
                 'arguments' => 'mautic.factory',
                 'alias'     => 'message'
             ),
+            'mautic.form.type.account_list'     => array(
+                'class'     => 'Mautic\WechatBundle\Form\Type\AccountListType',
+                'arguments' => 'mautic.factory',
+                'alias'     => 'account_list'
+            ),
+            'mautic.form.type.accountfollow_list' => array(
+                'class'     => 'Mautic\WechatBundle\Form\Type\AccountFollowType',
+                'arguments' => 'mautic.factory',
+                'alias'     => 'accountfollow_list'
+            )
         ),
     ),
     'parameters' => array(
