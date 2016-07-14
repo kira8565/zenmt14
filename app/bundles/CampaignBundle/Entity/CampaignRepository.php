@@ -253,6 +253,33 @@ class CampaignRepository extends CommonRepository
     }
 
     /**
+     * Get array of wechat account IDs => name assigned to this campaign
+     *
+     * @param $id
+     *
+     * @return array
+     */
+    public function getCampaignWechatSources($id)
+    {
+        $q = $this->getEntityManager()->getConnection()->createQueryBuilder()
+            ->select('cwa.wechat_account_id, wa.name')
+            ->from(MAUTIC_TABLE_PREFIX.'campaign_wechat_account_xref', 'cwa')
+            ->join('cwa', MAUTIC_TABLE_PREFIX.'wechat_accounts', 'wa', 'wa.id = cwa.wechat_account_id');
+        $q->where(
+            $q->expr()->eq('cwa.campaign_id', $id)
+        );
+
+        $wechat_accounts   = array();
+        $results = $q->execute()->fetchAll();
+
+        foreach ($results as $r) {
+            $wechat_accounts[$r['wechat_account_id']] = $r['name'];
+        }
+
+        return $wechat_accounts;
+    }
+
+    /**
      * @param $formId
      *
      * @return array

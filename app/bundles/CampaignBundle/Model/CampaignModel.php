@@ -228,7 +228,7 @@ class CampaignModel extends CommonFormModel
                 $source = $connection['sourceId'];
                 $target = $connection['targetId'];
 
-                if (in_array($source, array('lists', 'forms'))) {
+                if (in_array($source, array('lists', 'forms', 'wechats'))) {
                     // Only concerned with events and not sources
                     continue;
                 }
@@ -438,6 +438,9 @@ class CampaignModel extends CommonFormModel
         // Forms
         $sources['forms'] = $this->getRepository()->getCampaignFormSources($campaignId);
 
+        // Wechats
+        $sources['wechats'] = $this->getRepository()->getCampaignWechatSources($campaignId);
+
         return $sources;
     }
 
@@ -459,6 +462,9 @@ class CampaignModel extends CommonFormModel
                     case 'forms':
                         $entity->addForm($this->em->getReference('MauticFormBundle:Form', $id));
                         break;
+                    case 'wechats':
+                        $entity->addWechatAccount($this->em->getReference('MauticWechatBundle:Account', $id));
+                        break;
                     default:
                         break;
                 }
@@ -473,6 +479,9 @@ class CampaignModel extends CommonFormModel
                         break;
                     case 'forms':
                         $entity->removeForm($this->em->getReference('MauticFormBundle:Form', $id));
+                        break;
+                    case 'wechats':
+                        $entity->removeWechatAccount($this->em->getReference('MauticWechatBundle:Account', $id));
                         break;
                     default:
                         break;
@@ -514,6 +523,17 @@ class CampaignModel extends CommonFormModel
                 $forms = $repo->getFormList('', 0, 0, $viewOther, 'campaign');
                 foreach ($forms as $form) {
                     $choices['forms'][$form['id']] = $form['name'];
+                }
+
+            case 'wechats':
+            case null:
+                $choices['wechats'] = array();
+
+                $repo = $this->factory->getModel('wechat.account')->getRepository();
+                $repo->setCurrentUser($this->factory->getUser());
+                $accounts  = $repo->getAccountList('', 0, 0);
+                foreach ($accounts as $account) {
+                    $choices['wechats'][$account['id']] = $account['name'];
                 }
         }
 

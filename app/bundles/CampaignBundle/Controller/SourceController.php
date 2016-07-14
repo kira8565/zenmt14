@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SourceController extends CommonFormController
 {
-    private $supportedSourceTypes = array('lists', 'forms');
+    private $supportedSourceTypes = array('lists', 'forms', 'wechats');
 
     /**
      * @param int $objectId

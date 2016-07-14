@@ -16,6 +16,7 @@ use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\CoreBundle\Entity\FormEntity;
 use Mautic\FormBundle\Entity\Form;
 use Mautic\LeadBundle\Entity\LeadList;
+use Mautic\WechatBundle\Entity\Account;
 use Mautic\LeadBundle\Form\Validator\Constraints\LeadListAccess;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
@@ -79,6 +80,11 @@ class Campaign extends FormEntity
     private $forms;
 
     /**
+     * @var ArrayCollection
+     */
+    private $wechatAccounts;
+
+    /**
      * @var array
      */
     private $canvasSettings = array();
@@ -92,6 +98,7 @@ class Campaign extends FormEntity
         $this->leads  = new ArrayCollection();
         $this->lists  = new ArrayCollection();
         $this->forms  = new ArrayCollection();
+        $this->wechatAccounts  = new ArrayCollection();
     }
 
     /**
@@ -150,6 +157,13 @@ class Campaign extends FormEntity
             ->addJoinColumn('campaign_id', 'id', true, false, 'CASCADE')
             ->build();
 
+        $builder->createManyToMany('wechatAccounts', 'Mautic\WechatBundle\Entity\Account')
+            ->setJoinTable('campaign_wechat_account_xref')
+            ->setIndexBy('id')
+            ->addInverseJoinColumn('wechat_account_id', 'id', false, false, 'CASCADE')
+            ->addJoinColumn('campaign_id', 'id', true, false, 'CASCADE')
+            ->build();
+
         $builder->createField('canvasSettings', 'array')
             ->columnName('canvas_settings')
             ->nullable()
@@ -190,6 +204,7 @@ class Campaign extends FormEntity
                     'leads',
                     'forms',
                     'lists',
+                    'wechatAccounts',
                     'canvasSettings'
                 )
             )
@@ -500,6 +515,40 @@ class Campaign extends FormEntity
     {
         $this->changes['forms']['removed'][$form->getId()] = $form->getName();
         $this->forms->removeElement($form);
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getWechatAccounts ()
+    {
+        return $this->wechatAccounts;
+    }
+
+    /**
+     * Add wechatAccount
+     *
+     * @param Account $account
+     * @return Campaign
+     */
+    public function addWechatAccount(Account $account)
+    {
+        $this->wechatAccounts[] = $account;
+
+        $this->changes['wechatAccounts']['added'][$account->getId()] = $account->getName();
+
+        return $this;
+    }
+
+    /**
+     * Remove wechatAccount
+     *
+     * @param Account $account
+     */
+    public function removeWechatAccount(Account $account)
+    {
+        $this->changes['wechatAccounts']['removed'][$account->getId()] = $account->getName();
+        $this->wechatAccounts->removeElement($account);
     }
 
     /**

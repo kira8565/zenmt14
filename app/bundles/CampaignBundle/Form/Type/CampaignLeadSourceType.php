@@ -82,6 +82,28 @@ class CampaignLeadSourceType extends AbstractType
                     )
                 );
                 break;
+            case 'wechats':
+                $builder->add(
+                    'wechats',
+                    'choice',
+                    array(
+                        'choices'     => $options['source_choices'],
+                        'multiple'    => true,
+                        'label'       => 'mautic.campaign.leadsource.wechats',
+                        'label_attr'  => array('class' => 'control-label'),
+                        'attr'        => array(
+                            'class'   => 'form-control'
+                        ),
+                        'constraints' => array(
+                            new NotBlank(
+                                array(
+                                    'message' => 'mautic.core.value.required'
+                                )
+                            )
+                        )
+                    )
+                );
+                break;
             default:
                 break;
         }

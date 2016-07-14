@@ -45,6 +45,11 @@
                             <span><?php echo $view['translator']->trans('mautic.campaign.leadsource.lists'); ?></span>
                         </div>
                     </a>
+                    <a id="campaignLeadSource_wechats" data-toggle="ajaxmodal" data-target="#CampaignEventModal" class="<?php if (isset($campaignSources['wechats'])) echo 'disabled '; ?>list-group-item list-campaign-leadsource" href="<?php echo $view['router']->generate('mautic_campaignsource_action', array('objectAction' => 'new', 'objectId' => $campaignId, 'sourceType' => 'wechats')); ?>">
+                        <div data-toggle="tooltip" title="<?php echo $view['translator']->trans('mautic.campaign.leadsource.wechats.tooltip'); ?>">
+                            <span><?php echo $view['translator']->trans('mautic.campaign.leadsource.wechats'); ?></span>
+                        </div>
+                    </a>
                 </div>
             </div>
 

@@ -76,6 +76,10 @@ class CampaignController extends FormController
                     'mautic.campaign.leadsource.list' => array(
                         'options' => $sourceLists['lists'],
                         'prefix'  => 'list'
+                    ),
+                    'mautic.campaign.leadsource.wechat' => array(
+                        'options' => $sourceLists['wechats'],
+                        'prefix'  => 'wechat'
                     )
                 )
             )
@@ -473,7 +477,7 @@ class CampaignController extends FormController
                             )
                         );
                         $valid = false;
-                    } elseif (empty($currentSources['lists']) && empty($currentSources['forms'])) {
+                    } elseif (empty($currentSources['lists']) && empty($currentSources['forms']) && empty($currentSources['wechats'])) {
                         //set the error
                         $form->addError(
                             new FormError(
