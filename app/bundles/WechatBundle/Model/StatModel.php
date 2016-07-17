@@ -15,7 +15,6 @@ use Mautic\CoreBundle\Model\FormModel;
 use Mautic\WechatBundle\Swiftmailer\Exception\BatchQueueMaxException;
 use Mautic\WechatBundle\Entity\DoNotWechat;
 use Mautic\WechatBundle\Entity\Account;
-use Mautic\WechatBundle\Entity\Message;
 use Mautic\WechatBundle\Entity\Stat;
 use Mautic\WechatBundle\Event\WechatBuilderEvent;
 use Mautic\WechatBundle\Event\WechatEvent;
@@ -31,7 +30,7 @@ use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 /**
- * Class StatModel
+ * Class WechatModel
  * {@inheritdoc}
  * @package Mautic\CoreBundle\Model\FormModel
  */
@@ -42,27 +41,25 @@ class StatModel extends FormModel
      *
      * @return \Mautic\WechatBundle\Entity\AccountRepository
      */
-    public function getAccountRepository ()
+    public function getRepository ()
     {
-        return $this->em->getRepository('MauticWechatBundle:Account');
+        return $this->em->getRepository('MauticWechatBundle:Stat');
+    }
+
+    /**
+     * @return \Mautic\WechatBundle\Entity\StatRepository
+     */
+    public function getStatRepository ()
+    {
+        return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:Stat');
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @return \Mautic\WechatBundle\Entity\MessageRepository
      */
-    public function getMessageRepository ()
+    public function getPermissionBase ()
     {
-        return $this->em->getRepository('MauticWechatBundle:Message');
-    }
-
-    /**
-     * @return \Mautic\WechatBundle\Entity\getRepository
-     */
-    public function getRepository ()
-    {
-        return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:Stat');
+        return 'wechat:wechats';
     }
 
     /**
@@ -86,8 +83,32 @@ class StatModel extends FormModel
         }
 
         $changes = $entity->getChanges();
+        // $parent  = $entity->getVariantParent();
+        //
+        // if ($parent !== null && !empty($changes) && empty($this->inConversion)) {
+        //     $entity->setVariantSentCount(0);
+        //     $entity->setVariantReadCount(0);
+        //     $entity->setVariantStartDate($now->getDateTime());
+        // }
 
         parent::saveEntity($entity, $unlock);
+
+        // If parent, add this entity as a child of the parent so that it populates the list in the tab (due to Doctrine hanging on to entities in memory)
+        // if ($parent) {
+        //     $parent->addVariantChild($entity);
+        // }
+
+        // Reset associated variants if applicable due to changes
+        // if ($entity->isVariant() && !empty($changes) && empty($this->inConversion)) {
+        //     $dateString = $now->toUtcString();
+        //     $parentId = (!empty($parent)) ? $parent->getId() : $entity->getId();
+        //     $this->getRepository()->resetVariants($parentId, $dateString);
+        //
+        //     //if the parent was changed, then that parent/children must also be reset
+        //     if (isset($changes['variantParent'])) {
+        //         $this->getRepository()->resetVariants($changes['variantParent'][0], $dateString);
+        //     }
+        // }
     }
 
     /**
@@ -191,27 +212,6 @@ class StatModel extends FormModel
         }
 
         return $entity;
-    }
-
-
-     /**
-     * @param $idHash
-     *
-     * @return Stat
-     */
-    public function getWechatStatus ($idHash)
-    {
-        return $this->getStatRepository()->getWechatStatus($idHash);
-    }
-
-    /**
-     * @param $idHash
-     *
-     * @return Stat
-     */
-    public function getWechatStatus ($idHash)
-    {
-        return $this->getStatRepository()->getWechatStatus($idHash);
     }
 
 }

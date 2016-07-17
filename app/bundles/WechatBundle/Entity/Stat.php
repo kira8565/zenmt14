@@ -1,22 +1,15 @@
 <?php
-/**
- * @package     Mautic
- * @copyright   2014 Mautic Contributors. All rights reserved.
- * @author      Mautic
- * @link        http://mautic.org
- * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
 
 namespace Mautic\WechatBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
-use Mautic\CoreBundle\Entity\FormEntity;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
-use Mautic\CoreBundle\Entity\IpAddress;
+use Mautic\CoreBundle\Entity\FormEntity;
 use Mautic\CoreBundle\Helper\EmojiHelper;
+use Mautic\CoreBundle\Entity\IpAddress;
 use Mautic\LeadBundle\Entity\Lead;
-use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
+use Mautic\LeadBundle\Entity\LeadList;
+
 /**
  * Class Stat
  *
@@ -24,16 +17,20 @@ use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
  */
 class Stat extends FormEntity
 {
-
     /**
      * @var int
      */
     private $id;
 
     /**
-     * @var Wechat
+     * @var \Mautic\LeadBundle\WechatEntity\Account
      */
     private $account;
+
+    /**
+     * @var \Mautic\LeadBundle\WechatEntity\Message
+     */
+    private $message;
 
     /**
      * @var \Mautic\LeadBundle\Entity\Lead
@@ -73,22 +70,6 @@ class Stat extends FormEntity
     /**
      * @var string
      */
-    private $trackingHash;
-
-    /**
-     * @var string
-     */
-    private $source;
-
-    /**
-     * @var int
-     */
-    private $sourceId;
-
-    /**
-     * @var array
-     */
-    private $tokens = array();
 
     /**
      * @param ORM\ClassMetadata $metadata
@@ -100,119 +81,152 @@ class Stat extends FormEntity
         $builder->setTable('wechat_stats')
             ->setCustomRepositoryClass('Mautic\WechatBundle\Entity\StatRepository')
             ->addIndex(array('account_id', 'lead_id'), 'stat_wechat_search')
-            ->addIndex(array('type'), 'stat_wechat_type_search')
-            ->addIndex(array('tracking_hash'), 'stat_wechat_hash_search')
-            ->addIndex(array('source', 'source_id'), 'stat_wechat_source_search');
+            ->addIndex(array('type'), 'stat_wechat_type_search');
+
 
         $builder->addId();
 
-        $builder->createManyToOne('account', 'Account')
-            ->inversedBy('stats')
-            ->addJoinColumn('account_id', 'id', true, false, 'SET NULL')
-            ->build();
+        // $builder->createManyToOne('account', 'Mautic\WechatBundle\Entity\Account')
+        //     ->inversedBy('stats')
+        //     ->addJoinColumn('account_id', 'id', true, false, 'SET NULL')
+        //     ->build();
 
-        $builder->addLead(true, 'SET NULL');
+        $builder->createField('account', 'string')
+            ->columnName('account_id')
+            ->build();
 
         $builder->createManyToOne('list', 'Mautic\LeadBundle\Entity\LeadList')
             ->addJoinColumn('list_id', 'id', true, false, 'SET NULL')
             ->build();
 
+        $builder->addLead(true, 'SET NULL');
         $builder->addIpAddress(true);
 
-        $builder->createField('dateSent', 'datetime')
-            ->columnName('date_sent')
-            ->nullable()
-            ->build();
+        // $builder->createManyToOne('message', 'Message')
+        //     ->inversedBy('stats')
+        //     ->addJoinColumn('message_id', 'id', true, false, 'SET NULL')
+        //     ->build();
 
-        $builder->createField('dateRead', 'datetime')
-            ->columnName('date_read')
-            ->nullable()
+        $builder->createField('message', 'string')
+            ->columnName('message_id')
             ->build();
 
         $builder->createField('type', 'string')
-            ->columnName('type')
+            ->nullable()
             ->build();
 
         $builder->createField('content', 'string')
-            ->columnName('content')
             ->nullable()
             ->build();
 
-        $builder->createField('trackingHash', 'string')
-            ->columnName('tracking_hash')
-            ->nullable()
-            ->build();
-
-        $builder->createField('source', 'string')
-            ->nullable()
-            ->build();
-
-        $builder->createField('sourceId', 'integer')
-            ->columnName('source_id')
-            ->nullable()
-            ->build();
-
-        $builder->createField('tokens', 'array')
-            ->nullable()
-            ->build();
     }
 
     /**
-     * Prepares the metadata for API usage
+     * @param $id
      *
-     * @param $metadata
+     * @return $this
      */
-    public static function loadApiMetadata(ApiMetadataDriver $metadata)
+    public function setId($id)
     {
-        $metadata->setGroupPrefix('stat')
-            ->addProperties(
-                array(
-                    'id',
-                    'ipAddress',
-                    'dateSent',
-                    'dateRead',
-                    'source',
-                    'sourceId',
-                    'trackingHash',
-                    'lead',
-                    'accoutn',
-                    'type',
-                    'content'
-                )
-            )
-            ->build();
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
      * @return mixed
      */
-    public function getType ()
+    public function getAccount()
     {
-        return $this->type;
+        return $this->account;
     }
 
     /**
-     * @param mixed $type
+     * @param $account
+     *
+     * @return $this
      */
-    public function setType ($type)
+    public function setAccount($account)
     {
-        $this->type = $type;
+        $this->account = $account;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * @param $message
+     *
+     * @return $this
      */
-    public function getContent ()
+    public function setMessage($message)
     {
-        return $this->content;
+        $this->message = $message;
+
+        return $this;
     }
 
     /**
-     * @param mixed $dateSent
+     * @return string
      */
-    public function setContent ($content)
+    public function getMessage()
     {
-        $this->content = $content;
+        return $this->message;
+    }
+
+    /**
+     * @return Lead
+     */
+    public function getLead ()
+    {
+        return $this->lead;
+    }
+
+    /**
+     * @param mixed $lead
+     */
+    public function setLead (Lead $lead = null)
+    {
+        $this->lead = $lead;
+    }
+
+    /**
+     * @return \Mautic\LeadBundle\Entity\LeadList
+     */
+    public function getList ()
+    {
+        return $this->list;
+    }
+
+    /**
+     * @param mixed $list
+     */
+    public function setList ($list)
+    {
+        $this->list = $list;
+    }
+
+    /**
+     * @return IpAddress
+     */
+    public function getIpAddress ()
+    {
+        return $this->ipAddress;
+    }
+
+    /**
+     * @param mixed $ip
+     */
+    public function setIpAddress (IpAddress $ip)
+    {
+        $this->ipAddress = $ip;
     }
 
     /**
@@ -248,139 +262,35 @@ class Stat extends FormEntity
     }
 
     /**
-     * @return account
+     * @return mixed
      */
-    public function getAccount ()
+    public function getType()
     {
-        return $this->account;
+        return $this->type;
     }
 
     /**
-     * @param mixed $account
+     * @param mixed $type
      */
-    public function setAccount (Account $account = null)
+    public function setType($type)
     {
-        $this->account = $account;
+        $this->type = $type;
     }
 
     /**
      * @return mixed
      */
-    public function getId ()
+    public function getContent()
     {
-        return $this->id;
+        return $this->content;
     }
 
     /**
-     * @return IpAddress
+     * @param mixed $content
      */
-    public function getIpAddress ()
+    public function setContent($content)
     {
-        return $this->ipAddress;
-    }
-
-    /**
-     * @param mixed $ip
-     */
-    public function setIpAddress (IpAddress $ip)
-    {
-        $this->ipAddress = $ip;
-    }
-
-    /**
-     * @return Lead
-     */
-    public function getLead ()
-    {
-        return $this->lead;
-    }
-
-    /**
-     * @param mixed $lead
-     */
-    public function setLead (Lead $lead = null)
-    {
-        $this->lead = $lead;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTrackingHash ()
-    {
-        return $this->trackingHash;
-    }
-
-    /**
-     * @param mixed $trackingHash
-     */
-    public function setTrackingHash ($trackingHash)
-    {
-        $this->trackingHash = $trackingHash;
-    }
-
-    /**
-     * @return \Mautic\LeadBundle\Entity\LeadList
-     */
-    public function getList ()
-    {
-        return $this->list;
-    }
-
-    /**
-     * @param mixed $list
-     */
-    public function setList ($list)
-    {
-        $this->list = $list;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSource ()
-    {
-        return $this->source;
-    }
-
-    /**
-     * @param mixed $source
-     */
-    public function setSource ($source)
-    {
-        $this->source = $source;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSourceId ()
-    {
-        return $this->sourceId;
-    }
-
-    /**
-     * @param mixed $sourceId
-     */
-    public function setSourceId ($sourceId)
-    {
-        $this->sourceId = (int)$sourceId;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTokens ()
-    {
-        return $this->tokens;
-    }
-
-    /**
-     * @param mixed $tokens
-     */
-    public function setTokens ($tokens)
-    {
-        $this->tokens = $tokens;
+        $this->content = $content;
     }
 
 }

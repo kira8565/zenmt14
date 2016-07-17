@@ -23,14 +23,6 @@ return array(
                 'path'       => '/wechats/article/{objectAction}/{objectId}',
                 'controller' => 'MauticWechatBundle:Article:execute'
             ),
-            'mautic_wechat_stat_action' => array(
-                'path'       => '/wechats/stat/{objectAction}/{objectId}',
-                'controller' => 'MauticWechatBundle:Stat:execute'
-            ),
-            // 'mautic_wechat_event'         => array(
-            //     'path'       => '/wechats/event',
-            //     'controller' => 'MauticWechatBundle:Public:eventAgent'
-            // ),
         ),
         'public' => array(
             'mautic_wechat_event'         => array(
