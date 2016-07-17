@@ -12,6 +12,12 @@ return array(
                 'controller' => 'MauticWechatBundle:Message:execute'
             )
         ),
+        'public' => array(
+            'mautic_wechat_event'         => array(
+                'path'       => '/wechat/event',
+                'controller' => 'MauticWechatBundle:Public:eventAgent'
+            )
+        )
     ),
     'services'    => array(
         'events'  => array(
@@ -41,8 +47,13 @@ return array(
                 'class'     => 'Mautic\WechatBundle\Form\Type\AccountFollowType',
                 'arguments' => 'mautic.factory',
                 'alias'     => 'accountfollow_list'
-            )
-        ),
+            ),
+            'mautic.form.type.stat' => array(
+                'class'     => 'Mautic\WechatBundle\Form\Type\StatType',
+                'arguments' => 'mautic.factory',
+                'alias'     => 'stat'
+            ),
+        )
     ),
     'parameters' => array(
         'wechat_enabled' => false
