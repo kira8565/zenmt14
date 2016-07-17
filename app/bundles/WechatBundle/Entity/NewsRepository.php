@@ -5,11 +5,11 @@ use Doctrine\ORM\NoResultException;
 use Mautic\CoreBundle\Entity\CommonRepository;
 
 /**
- * Class MessageRepository
+ * Class NewsRepository
  *
  * @package Mautic\WechatBundle\Entity
  */
-class MessageRepository extends CommonRepository
+class NewsRepository extends CommonRepository
 {
     /**
      * @param      $smsId
@@ -17,13 +17,13 @@ class MessageRepository extends CommonRepository
      *
      * @return array
      */
-    public function getMessage($Id)
+    public function getNews($id)
     {
         $q = $this->_em->getConnection()->createQueryBuilder();
-        $q->select('m.lead_id')
-            ->from(MAUTIC_TABLE_PREFIX . 'wechat_messages', 'm')
-            ->where('m.id = :id')
-            ->setParameter('id', $Id);
+        $q->select('news.id')
+            ->from(MAUTIC_TABLE_PREFIX . 'wechat_message_news', 'news')
+            ->where('news.id = :id')
+            ->setParameter('id', $id);
 
         $result = $q->execute()->fetchAll();
 
@@ -35,7 +35,7 @@ class MessageRepository extends CommonRepository
      */
     public function getTableAlias()
     {
-        return 'm';
+        return 'news';
     }
 
 }

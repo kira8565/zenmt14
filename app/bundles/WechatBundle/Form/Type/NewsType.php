@@ -11,11 +11,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * Class MessageType
+ * Class NewsType
  *
  * @package Mautic\WechatBundle\Form\Type
  */
-class MessageType extends AbstractType
+class NewsType extends AbstractType
 {
     private $translator;
     private $em;
@@ -38,7 +38,7 @@ class MessageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addEventSubscriber(new CleanFormSubscriber(array('content' => 'html', 'customHtml' => 'html')));
-        $builder->addEventSubscriber(new FormExitSubscriber('wechat.message', $options));
+        $builder->addEventSubscriber(new FormExitSubscriber('wechat.news', $options));
 
         $builder->add(
             'name',
@@ -49,6 +49,7 @@ class MessageType extends AbstractType
                 'attr'       => array('class' => 'form-control')
             )
         );
+
         $builder->add(
             'title',
             'text',
@@ -68,10 +69,19 @@ class MessageType extends AbstractType
             )
         );
         $builder->add(
-            'content',
+            'url',
             'text',
             array(
-                'label'      => 'mautic.wechat.form.content',
+                'label'      => 'mautic.wechat.form.url',
+                'label_attr' => array('class' => 'control-label'),
+                'attr'       => array('class' => 'form-control')
+            )
+        );
+        $builder->add(
+            'image',
+            'text',
+            array(
+                'label'      => 'mautic.wechat.form.image',
                 'label_attr' => array('class' => 'control-label'),
                 'attr'       => array('class' => 'form-control')
             )
@@ -103,7 +113,7 @@ class MessageType extends AbstractType
     {
         $resolver->setDefaults(
             array(
-                'data_class' => 'Mautic\WechatBundle\Entity\Message'
+                'data_class' => 'Mautic\WechatBundle\Entity\News'
             )
         );
 
@@ -115,6 +125,6 @@ class MessageType extends AbstractType
      */
     public function getName()
     {
-        return "message";
+        return "news";
     }
 }

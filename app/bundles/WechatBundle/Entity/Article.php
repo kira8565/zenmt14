@@ -11,11 +11,11 @@ use Mautic\LeadBundle\Entity\Lead;
 use Mautic\LeadBundle\Entity\LeadList;
 
 /**
- * Class Message
+ * Class Article
  *
  * @package Mautic\WechatBundle\Entity
  */
-class Message extends FormEntity
+class Article extends FormEntity
 {
     /**
      * @var int
@@ -35,7 +35,7 @@ class Message extends FormEntity
     /**
      * @var string
      */
-    private $description;
+    private $author;
 
     /**
      * @var string
@@ -58,8 +58,8 @@ class Message extends FormEntity
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('wechat_messages')
-            ->setCustomRepositoryClass('Mautic\WechatBundle\Entity\MessageRepository');
+        $builder->setTable('wechat_message_articles')
+            ->setCustomRepositoryClass('Mautic\WechatBundle\Entity\ArticleRepository');
 
         $builder->addId();
 
@@ -67,6 +67,10 @@ class Message extends FormEntity
             ->build();
 
         $builder->createField('title', 'string')
+            ->build();
+
+        $builder->createField('author', 'string')
+            ->nullable()
             ->build();
 
         $builder->createField('content', 'string')
@@ -141,23 +145,23 @@ class Message extends FormEntity
     /**
      * @return mixed
      */
-    public function getDescription()
+    public function getAuthor()
     {
-        return $this->description;
+        return $this->author;
     }
 
     /**
-     * @param mixed $description
+     * @param mixed $author
      */
-    public function setDescription($description)
+    public function setAuthor($author)
     {
-        $this->description = $description;
+        $this->author = $author;
     }
 
     /**
      * @return mixed
      */
-    public function getContent ()
+    public function getContent()
     {
         return $this->content;
     }

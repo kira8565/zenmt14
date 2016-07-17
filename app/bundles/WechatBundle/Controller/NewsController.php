@@ -13,20 +13,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class MessageController extends FormController
+class NewsController extends FormController
 {
     /**
      * Generates new form and processes post data
      *
-     * @param  Message $entity
+     * @param  News $entity
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function newAction($entity = null)
     {
-        $model = $this->factory->getModel('wechat.message');
+        $model = $this->factory->getModel('wechat.news');
 
-        if (! $entity instanceof Message) {
+        if (! $entity instanceof News) {
             /** @var \Mautic\WechatBundle\Entity\Wechat $entity */
             $entity  = $model->getEntity();
         }
@@ -36,7 +36,7 @@ class MessageController extends FormController
 
         //set the page we came from
         $page   = $session->get('mautic.wechat.page', 1);
-        $action = $this->generateUrl('mautic_wechat_message_action', array('objectAction' => 'new'));
+        $action = $this->generateUrl('mautic_wechat_news_action', array('objectAction' => 'new'));
 
         //create the form
         $form = $model->createForm($entity, $this->get('form.factory'), $action, array('csrf_protection' => false));
@@ -46,11 +46,13 @@ class MessageController extends FormController
                 if ($this->isFormValid($form)) {
                     //form is valid so process the data
                     $model->saveEntity($entity);
+                }else{
+                    return new Response("<html>isFormValid invalid!!!!!!!!!!!</html>", 200, array('Content-Type' => 'text/html; charset=utf-8'));
                 }
             }
         }
 
-        return new Response("<html>message new test controller!!!!!!!!!!!</html>", 200, array('Content-Type' => 'text/html; charset=utf-8'));
+        return new Response("<html>news new test controller!!!!!!!!!!!</html>", 200, array('Content-Type' => 'text/html; charset=utf-8'));
     }
 
 }

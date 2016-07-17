@@ -11,11 +11,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * Class MessageType
+ * Class ArticleType
  *
  * @package Mautic\WechatBundle\Form\Type
  */
-class MessageType extends AbstractType
+class ArticleType extends AbstractType
 {
     private $translator;
     private $em;
@@ -38,7 +38,7 @@ class MessageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addEventSubscriber(new CleanFormSubscriber(array('content' => 'html', 'customHtml' => 'html')));
-        $builder->addEventSubscriber(new FormExitSubscriber('wechat.message', $options));
+        $builder->addEventSubscriber(new FormExitSubscriber('wechat.article', $options));
 
         $builder->add(
             'name',
@@ -59,10 +59,10 @@ class MessageType extends AbstractType
             )
         );
         $builder->add(
-            'description',
+            'author',
             'text',
             array(
-                'label'      => 'mautic.wechat.form.description',
+                'label'      => 'mautic.wechat.form.author',
                 'label_attr' => array('class' => 'control-label'),
                 'attr'       => array('class' => 'form-control')
             )
@@ -103,7 +103,7 @@ class MessageType extends AbstractType
     {
         $resolver->setDefaults(
             array(
-                'data_class' => 'Mautic\WechatBundle\Entity\Message'
+                'data_class' => 'Mautic\WechatBundle\Entity\Article'
             )
         );
 
@@ -115,6 +115,6 @@ class MessageType extends AbstractType
      */
     public function getName()
     {
-        return "message";
+        return "article";
     }
 }

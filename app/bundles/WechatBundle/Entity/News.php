@@ -11,11 +11,11 @@ use Mautic\LeadBundle\Entity\Lead;
 use Mautic\LeadBundle\Entity\LeadList;
 
 /**
- * Class Message
+ * Class News
  *
  * @package Mautic\WechatBundle\Entity
  */
-class Message extends FormEntity
+class News extends FormEntity
 {
     /**
      * @var int
@@ -40,7 +40,12 @@ class Message extends FormEntity
     /**
      * @var string
      */
-    private $content;
+    private $url;
+
+    /**
+     * @var string
+     */
+    private $image;
 
     /**
      * @var string
@@ -58,8 +63,8 @@ class Message extends FormEntity
     {
         $builder = new ClassMetadataBuilder($metadata);
 
-        $builder->setTable('wechat_messages')
-            ->setCustomRepositoryClass('Mautic\WechatBundle\Entity\MessageRepository');
+        $builder->setTable('wechat_message_news')
+            ->setCustomRepositoryClass('Mautic\WechatBundle\Entity\NewsRepository');
 
         $builder->addId();
 
@@ -69,7 +74,11 @@ class Message extends FormEntity
         $builder->createField('title', 'string')
             ->build();
 
-        $builder->createField('content', 'string')
+        $builder->createField('url', 'string')
+            ->nullable()
+            ->build();
+
+        $builder->createField('image', 'string')
             ->nullable()
             ->build();
 
@@ -157,17 +166,33 @@ class Message extends FormEntity
     /**
      * @return mixed
      */
-    public function getContent ()
+    public function getUrl ()
     {
-        return $this->content;
+        return $this->url;
     }
 
     /**
-     * @param mixed $content
+     * @param mixed $url
      */
-    public function setContent($content)
+    public function setUrl($url)
     {
-        $this->content = $content;
+        $this->url = $url;
+    }
+
+    /**
+     * @return image
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param mixed $image
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
     }
 
     /**

@@ -13,20 +13,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class MessageController extends FormController
+class ArticleController extends FormController
 {
     /**
      * Generates new form and processes post data
      *
-     * @param  Message $entity
+     * @param  Article $entity
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function newAction($entity = null)
     {
-        $model = $this->factory->getModel('wechat.message');
+        $model = $this->factory->getModel('wechat.article');
 
-        if (! $entity instanceof Message) {
+        if (! $entity instanceof Article) {
             /** @var \Mautic\WechatBundle\Entity\Wechat $entity */
             $entity  = $model->getEntity();
         }
@@ -36,7 +36,7 @@ class MessageController extends FormController
 
         //set the page we came from
         $page   = $session->get('mautic.wechat.page', 1);
-        $action = $this->generateUrl('mautic_wechat_message_action', array('objectAction' => 'new'));
+        $action = $this->generateUrl('mautic_wechat_article_action', array('objectAction' => 'new'));
 
         //create the form
         $form = $model->createForm($entity, $this->get('form.factory'), $action, array('csrf_protection' => false));
@@ -50,7 +50,7 @@ class MessageController extends FormController
             }
         }
 
-        return new Response("<html>message new test controller!!!!!!!!!!!</html>", 200, array('Content-Type' => 'text/html; charset=utf-8'));
+        return new Response("<html>article new test controller!!!!!!!!!!!</html>", 200, array('Content-Type' => 'text/html; charset=utf-8'));
     }
 
 }
