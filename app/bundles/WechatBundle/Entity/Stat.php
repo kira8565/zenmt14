@@ -33,6 +33,16 @@ class Stat extends FormEntity
     private $message;
 
     /**
+     * @var \Mautic\LeadBundle\WechatEntity\Article
+     */
+    private $article;
+
+    /**
+     * @var \Mautic\LeadBundle\WechatEntity\News
+     */
+    private $news;
+
+    /**
      * @var \Mautic\LeadBundle\Entity\Lead
      */
     private $lead;
@@ -60,7 +70,17 @@ class Stat extends FormEntity
     /**
      * @var string
      */
-    private $type;
+    private $eventType;
+
+    /**
+    * @var string
+    */
+    private $openId;
+
+    /**
+    * @var string
+    */
+    private $originalId;
 
     /**
      * @var string
@@ -81,18 +101,31 @@ class Stat extends FormEntity
         $builder->setTable('wechat_stats')
             ->setCustomRepositoryClass('Mautic\WechatBundle\Entity\StatRepository')
             ->addIndex(array('account_id', 'lead_id'), 'stat_wechat_search')
-            ->addIndex(array('type'), 'stat_wechat_type_search');
-
+            ->addIndex(array('message_id'), 'stat_wechat_message_search')
+            ->addIndex(array('article_id'), 'stat_wechat_article_search')
+            ->addIndex(array('news_id'), 'stat_wechat_news_search')
+            ->addIndex(array('event_type'), 'stat_wechat_event_type_search');
 
         $builder->addId();
 
-        // $builder->createManyToOne('account', 'Mautic\WechatBundle\Entity\Account')
-        //     ->inversedBy('stats')
-        //     ->addJoinColumn('account_id', 'id', true, false, 'SET NULL')
-        //     ->build();
+        $builder->createManyToOne('account', 'Mautic\WechatBundle\Entity\Account')
+            ->inversedBy('stats')
+            ->addJoinColumn('account_id', 'id', true, false, 'SET NULL')
+            ->build();
 
-        $builder->createField('account', 'string')
-            ->columnName('account_id')
+        $builder->createManyToOne('message', 'Mautic\WechatBundle\Entity\Message')
+            ->inversedBy('stats')
+            ->addJoinColumn('message_id', 'id', true, false, 'SET NULL')
+            ->build();
+
+        $builder->createManyToOne('article', 'Mautic\WechatBundle\Entity\Article')
+            ->inversedBy('stats')
+            ->addJoinColumn('article_id', 'id', true, false, 'SET NULL')
+            ->build();
+
+        $builder->createManyToOne('news', 'Mautic\WechatBundle\Entity\News')
+            ->inversedBy('stats')
+            ->addJoinColumn('news_id', 'id', true, false, 'SET NULL')
             ->build();
 
         $builder->createManyToOne('list', 'Mautic\LeadBundle\Entity\LeadList')
@@ -102,23 +135,24 @@ class Stat extends FormEntity
         $builder->addLead(true, 'SET NULL');
         $builder->addIpAddress(true);
 
-        // $builder->createManyToOne('message', 'Message')
-        //     ->inversedBy('stats')
-        //     ->addJoinColumn('message_id', 'id', true, false, 'SET NULL')
-        //     ->build();
-
-        $builder->createField('message', 'string')
-            ->columnName('message_id')
+        $builder->createField('eventType', 'string')
+            ->columnName('event_type')
+            ->nullable()
             ->build();
 
-        $builder->createField('type', 'string')
+        $builder->createField('openId', 'string')
+            ->columnName('open_id')
+            ->nullable()
+            ->build();
+
+        $builder->createField('originalId', 'string')
+            ->columnName('original_id')
             ->nullable()
             ->build();
 
         $builder->createField('content', 'string')
             ->nullable()
             ->build();
-
     }
 
     /**
@@ -142,7 +176,7 @@ class Stat extends FormEntity
     }
 
     /**
-     * @return mixed
+     * @return Account
      */
     public function getAccount()
     {
@@ -150,35 +184,59 @@ class Stat extends FormEntity
     }
 
     /**
-     * @param $account
-     *
-     * @return $this
+     * @param mixed $account
      */
-    public function setAccount($account)
+    public function setAccount(Account $account = null)
     {
         $this->account = $account;
-
-        return $this;
     }
 
     /**
-     * @param $message
-     *
-     * @return $this
+     * @param $mixed $message
      */
-    public function setMessage($message)
+    public function setMessage(Message $message = null)
     {
         $this->message = $message;
-
-        return $this;
     }
 
     /**
-     * @return string
+     * @return Message
      */
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     * @param $mixed  $article
+     */
+    public function setArticle(Article $article = null)
+    {
+        $this->article = $article;
+    }
+
+    /**
+     * @return Article
+     */
+    public function getArticle()
+    {
+        return $this->article;
+    }
+
+    /**
+     * @param $mixed  $news
+     */
+    public function setNews(News $news = null)
+    {
+        $this->news = $news;
+    }
+
+    /**
+     * @return News
+     */
+    public function getNews()
+    {
+        return $this->news;
     }
 
     /**
@@ -264,17 +322,49 @@ class Stat extends FormEntity
     /**
      * @return mixed
      */
-    public function getType()
+    public function getEventType()
     {
-        return $this->type;
+        return $this->eventType;
     }
 
     /**
-     * @param mixed $type
+     * @param mixed $eventType
      */
-    public function setType($type)
+    public function setEventType($eventType)
     {
-        $this->type = $type;
+        $this->eventType = $eventType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOpenId ()
+    {
+        return $this->openId;
+    }
+
+    /**
+     * @param mixed $openId
+     */
+    public function setOpenId ($openId)
+    {
+        $this->openId = $openId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOriginalId ()
+    {
+        return $this->originalId;
+    }
+
+    /**
+     * @param mixed $originalId
+     */
+    public function setOriginalId ($originalId)
+    {
+        $this->originalId = $originalId;
     }
 
     /**

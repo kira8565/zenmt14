@@ -42,4 +42,12 @@ class WechatEvent extends CommonEvent
     {
         return $this->entity;
     }
+
+    /**
+     * @return eventType
+     */
+    public function getEventType()
+    {
+        return $this->entity->getEventType();
+    }
 }
