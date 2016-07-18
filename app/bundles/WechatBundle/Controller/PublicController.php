@@ -31,28 +31,23 @@ class PublicController extends FormController
             $entity  = $model->getEntity();
         }
 
-        $method  = $this->request->getMethod();
-        $session = $this->factory->getSession();
+        $request = $this->request;
 
-        //set the page we came from
-        $page   = $session->get('mautic.wechat.page', 1);
-        $action = $this->generateUrl('mautic_wechat_event', array('objectAction' => 'new'));
+        $method  = $request->getMethod();
 
-        //create the form
-        $form = $model->createForm($entity, $this->get('form.factory'), $action, array('csrf_protection' => false));
+        $openId =  $request->get('openId');
+        $originalId =  $request->get('originalId');
+        $eventType = $request->get('eventType');
 
         if ($method == 'POST') {
-            if (! $cancelled = $this->isFormCancelled($form)) {
-                if ($this->isFormValid($form)) {
-                    //form is valid so process the data
-                    $model->saveEntity($entity);
-                }else{
-                return new Response('{"status":4000, "message":"invalid param"}', 200, array('Content-Type' => 'application/json;charset=UTF-8'));
-            }
-            }
+            $entity->setOpenId($openId);
+            $entity->setOriginalId($originalId);
+            $entity->setEventType($eventType);
+            $model->processWechatEvent($entity, $request);
+
+            return new Response('{"status":200, "message":"ok"}', 200, array('Content-Type' => 'application/json;charset=UTF-8'));
+        }else{
+            return new Response('{"status":4000, "message":"This method is not supported."}', 200, array('Content-Type' => 'application/json;charset=UTF-8'));
         }
-
-        return new Response("<html>stat new test public controller!!!!!!!!!!!</html>", 200, array('Content-Type' => 'text/html; charset=utf-8'));
     }
-
 }

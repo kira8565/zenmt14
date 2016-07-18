@@ -41,28 +41,28 @@ class StatType extends AbstractType
         $builder->addEventSubscriber(new FormExitSubscriber('wechat.stat', $options));
 
         $builder->add(
-            'account',
+            'eventType',
             'text',
             array(
-                'label'      => 'mautic.wechat.form.internal.account',
+                'label'      => 'mautic.wechat.form.internal.eventType',
                 'label_attr' => array('class' => 'control-label'),
                 'attr'       => array('class' => 'form-control')
             )
         );
         $builder->add(
-            'message',
+            'openId',
             'text',
             array(
-                'label'      => 'mautic.wechat.form.message',
+                'label'      => 'mautic.wechat.form.openId',
                 'label_attr' => array('class' => 'control-label'),
                 'attr'       => array('class' => 'form-control')
             )
         );
         $builder->add(
-            'type',
+            'originalId',
             'text',
             array(
-                'label'      => 'mautic.wechat.form.type',
+                'label'      => 'mautic.wechat.form.originalId',
                 'label_attr' => array('class' => 'control-label'),
                 'attr'       => array('class' => 'form-control')
             )

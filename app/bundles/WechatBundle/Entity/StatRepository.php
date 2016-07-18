@@ -12,25 +12,6 @@ use Mautic\CoreBundle\Entity\CommonRepository;
 class StatRepository extends CommonRepository
 {
     /**
-     * @param      $smsId
-     * @param null $listId
-     *
-     * @return array
-     */
-    public function getStats($Type)
-    {
-        $q = $this->_em->getConnection()->createQueryBuilder();
-        $q->select('stat.id')
-            ->from(MAUTIC_TABLE_PREFIX . 'wechat_stats', 'stat')
-            ->where('stat.id = :id')
-            ->setParameter('id', $id);
-
-        $result = $q->execute()->fetchAll();
-
-        return $result;
-    }
-
-    /**
      * @return string
      */
     public function getTableAlias()

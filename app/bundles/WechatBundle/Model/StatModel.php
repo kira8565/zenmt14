@@ -230,6 +230,8 @@ class StatModel extends FormModel
         } else {
 
         }
+
+        $this->getRepository()->saveEntity($stat);
     }
 
 }
