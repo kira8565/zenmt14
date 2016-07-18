@@ -214,4 +214,22 @@ class StatModel extends FormModel
         return $entity;
     }
 
+    public function processWechatEvent($stat, $request) {
+        $event = new WechatEvent($stat, $request);
+
+        $eventType = $event->getEventType();
+
+        if ($eventType == 'account_followed') {
+
+        } else if ($eventType == 'message_received') {
+
+        } else if ($eventType == 'article_opened') {
+
+        } else if ($eventType == 'article_shared') {
+
+        } else {
+
+        }
+    }
+
 }
