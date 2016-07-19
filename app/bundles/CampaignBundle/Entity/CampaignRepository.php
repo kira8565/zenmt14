@@ -297,6 +297,19 @@ class CampaignRepository extends CommonRepository
         return $campaigns;
     }
 
+    public function findByWechatAccountId($wechatAccountId)
+    {
+        $q = $this->createQueryBuilder('c')
+            ->join('c.wechatAccounts', 'f');
+        $q->where(
+            $q->expr()->eq('f.id', $wechatAccountId)
+        );
+
+        $campaigns = $q->getQuery()->getResult();
+
+        return $campaigns;
+    }
+
     /**
      * @return string
      */

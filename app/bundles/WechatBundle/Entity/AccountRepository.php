@@ -9,7 +9,6 @@ use Mautic\CoreBundle\Entity\CommonRepository;
  */
 class AccountRepository extends CommonRepository
 {
-
     /**
      * @param string $search
      * @param int    $limit
@@ -35,6 +34,21 @@ class AccountRepository extends CommonRepository
         }
 
         return $q->getQuery()->getArrayResult();
+    }
+
+    public function findByOriginalId($originalId)
+    {
+        $q = $this->createQueryBuilder('e')
+            ->where('e.original_id = :identifier')
+            ->setParameter('identifier', strval($originalId));
+
+        //return $q->getQuery()->getArrayResult();
+        $ary = $q->getQuery()->getArrayResult();
+        if (!isset($ary) || count($ary) == 0) {
+            return null;
+        } else {
+            return $this->getEntity($ary[0]['id']);
+        }
     }
 
     /**

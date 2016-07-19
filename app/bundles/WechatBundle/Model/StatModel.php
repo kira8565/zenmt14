@@ -16,6 +16,8 @@ use Mautic\WechatBundle\Swiftmailer\Exception\BatchQueueMaxException;
 use Mautic\WechatBundle\Entity\DoNotWechat;
 use Mautic\WechatBundle\Entity\Account;
 use Mautic\WechatBundle\Entity\Stat;
+use Mautic\WechatBundle\Entity\Openid;
+use Mautic\WechatBundle\Entity\OpenidRepository;
 use Mautic\WechatBundle\Event\WechatBuilderEvent;
 use Mautic\WechatBundle\Event\WechatEvent;
 use Mautic\WechatBundle\Event\WechatOpenEvent;
@@ -52,6 +54,22 @@ class StatModel extends FormModel
     public function getStatRepository ()
     {
         return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:Stat');
+    }
+
+    /**
+     * @return \Mautic\WechatBundle\Entity\OpenidRepository
+     */
+    public function getOpenidRepository ()
+    {
+        return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:Openid');
+    }
+
+    /**
+     * @return \Mautic\WechatBundle\Entity\AccountRepository
+     */
+    public function getAccountRepository ()
+    {
+        return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:Account');
     }
 
     /**
@@ -220,7 +238,42 @@ class StatModel extends FormModel
         $eventType = $event->getEventType();
 
         if ($eventType == 'account_followed') {
+            $leadModel = $this->factory->getModel('lead');
 
+            $openId = $stat->getOpenId();
+            $originalId = $stat->getOriginalId();
+
+            $openidRepo = $this->getOpenidRepository();
+            $ary = $openidRepo->findByOpenId($openId);
+
+            if (count($ary) == 0) {
+                $lead = new Lead();
+                $lead->setNewlyCreated(true);
+                $lead->setLastActive(new \DateTime());
+                $lead->addUpdatedField('email', $openId . '@weixin.com');
+                $leadModel->saveEntity($lead, false);
+
+                $accountRepo = $this->getAccountRepository();
+                $account = $accountRepo->findByOriginalId($originalId);
+                if (isset($account)) {
+                    $leadId = $lead->getId();
+                    $accountId = $account->getId();
+                    $openidEntity = new Openid();
+                    $openidEntity->setOpenId($openId);
+                    $openidEntity->setLead($lead);
+                    $openidEntity->setAccount($account);
+                    $openidEntity->setFollowed(true);
+                    $openidRepo->saveEntity($openidEntity);
+
+                    $campaignModel = $this->factory->getModel('campaign');
+                    $campaigns = $campaignModel->getRepository()->findByWechatAccountId($accountId);
+                    if (!empty($campaigns)) {
+                        foreach ($campaigns as $campaign) {
+                            $campaignModel->addLead($campaign, $lead);
+                        }
+                    }
+                }
+            }
         } else if ($eventType == 'message_received') {
 
         } else if ($eventType == 'article_opened') {
