@@ -29,7 +29,7 @@ class CampaignSubscriber extends CommonSubscriber
             $action = array(
                 'label' =>  'mautic.wechat.campaign.event.send_message',
                 'description' => 'mautic.wechat.campaign.event.send_message_descr',
-                'callback'         => null,
+                'callback'         => array('Mautic\WechatBundle\Helper\WechatHelper', 'send'),
                 #'formType'         => 'wechatsend_list',
                 #'formTypeOptions'  => array('update_select' => 'campaignevent_properties_sms'),
                 #'formTheme'        => 'MauticWechatBundle:FormTheme\WechatSendList',
