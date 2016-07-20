@@ -61,6 +61,12 @@ class WechatApi extends AbstractWechatApi
     protected function getWechatApp(Account $account)
     {
         $options = [
+            'debug'  => true,
+
+            'log'    => [
+                'level' => 'debug',
+                'file'  => '/home/www/easywechat.log',
+            ],
             'app_id'  => $account->getAppId(),         // AppID
             'secret'  => $account->getAppSecret(),     // AppSecret
             'token'   => $account->getToken(),         // Token

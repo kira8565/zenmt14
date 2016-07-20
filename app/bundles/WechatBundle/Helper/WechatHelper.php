@@ -59,6 +59,7 @@ class WechatHelper
         $wechatModel = $factory->getModel('wechat');
 
         $messageId = (int) $event['properties']['message'];
+        $logger->info('-------sendWechat: messageId: ' . print_r($messageId, true));
         /** @var array */
         $messageData = $wechatModel->getSendMessage($messageId);
         $campaignModel = $factory->getModel('campaign');
@@ -75,9 +76,9 @@ class WechatHelper
                 continue;
             }
 
-            // $logger->error('-------sendWechat: openId: ' . print_r($openId, true));
-            // $logger->error('-------sendWechat: account: ' . print_r($account, true));
-            // $logger->error('-------sendWechat: messageData: ' . print_r($messageData, true));
+            $logger->info('-------sendWechat: openId: ' . print_r($openId, true));
+            $logger->info('-------sendWechat: account: ' . print_r($account, true));
+            $logger->info('-------sendWechat: messageData: ' . print_r($messageData, true));
 
             $metadata = $wechatApi->sendWechat($account, $openId, $messageData);
 
