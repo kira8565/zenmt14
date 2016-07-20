@@ -31,6 +31,33 @@ class MessageRepository extends CommonRepository
     }
 
     /**
+     * @param string $search
+     * @param int    $limit
+     * @param int    $start
+     *
+     * @return array
+     */
+    public function getMessageList($search = '', $limit = 10, $start = 0)
+    {
+        $q = $this->createQueryBuilder('m');
+        $q->select('partial m.{id, name, title}');
+
+        if (!empty($search)) {
+            $q->andWhere($q->expr()->like('m.title', ':search'))
+                ->setParameter('search', "{$search}%");
+        }
+
+        $q->orderBy('m.title');
+
+        if (!empty($limit)) {
+            $q->setFirstResult($start)
+                ->setMaxResults($limit);
+        }
+
+        return $q->getQuery()->getArrayResult();
+    }
+
+    /**
      * @return string
      */
     public function getTableAlias()

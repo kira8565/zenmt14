@@ -142,6 +142,86 @@ class Account
     {
         return $this->description;
     }
+
+    /**
+     * @param $app_id
+     *
+     * @return $this
+     */
+    public function setAppId($app_id)
+    {
+        $this->app_id = $app_id;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAppId()
+    {
+        return $this->app_id;
+    }
+
+    /**
+     * @param $app_secret
+     *
+     * @return $this
+     */
+    public function setAppSecret($app_secret)
+    {
+        $this->app_secret = $app_secret;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAppSecret()
+    {
+        return $this->app_secret;
+    }
+
+    /**
+     * @param $token
+     *
+     * @return $this
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param $aes_key
+     *
+     * @return $this
+     */
+    public function setAesKey($aes_key)
+    {
+        $this->aes_key = $aes_key;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAesKey()
+    {
+        return $this->aes_key;
+    }
 }
 
 

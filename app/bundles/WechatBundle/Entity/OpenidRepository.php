@@ -24,6 +24,26 @@ class OpenidRepository extends CommonRepository
     }
 
     /**
+     * @param string $accountId, $leaId
+     *
+     * @return string
+     */
+    public function getOpenId($accountId, $leaId)
+    {
+        $q = $this->createQueryBuilder('e')
+            ->where('e.account = :accountId and e.lead = :leaId')
+            ->setParameter('accountId', strval($accountId))
+            ->setParameter('leaId', strval($leaId));
+
+        $ary = $q->getQuery()->getArrayResult();
+        if (!isset($ary) || count($ary) == 0) {
+            return null;
+        } else {
+            return $ary[0]['openId'];
+        }
+    }
+
+    /**
      * @return string
      */
     protected function getDefaultOrder()

@@ -29,11 +29,10 @@ class CampaignSubscriber extends CommonSubscriber
             $action = array(
                 'label' =>  'mautic.wechat.campaign.event.send_message',
                 'description' => 'mautic.wechat.campaign.event.send_message_descr',
-                'callback'         => array('Mautic\WechatBundle\Helper\WechatHelper', 'send'),
-                #'formType'         => 'wechatsend_list',
-                #'formTypeOptions'  => array('update_select' => 'campaignevent_properties_sms'),
-                #'formTheme'        => 'MauticWechatBundle:FormTheme\WechatSendList',
-                #'timelineTemplate' => 'MauticWechatBundle:SubscribedEvents\Timeline:index.html.php'
+                'callback'         => array('\Mautic\WechatBundle\Helper\WechatHelper', 'send'),
+                'formType'        => 'messagesend_list',
+                'formTypeOptions'  => array('update_select' => 'campaignevent_properties_message'),
+                'formTheme'        => 'MauticSmsBundle:FormTheme\WechatSendList',
             );
             $event->addAction('wechat.send_message', $action);
 
@@ -55,12 +54,6 @@ class CampaignSubscriber extends CommonSubscriber
                 'description' => 'mautic.wechat.campaign.event.article_opened_descr',
             );
             $event->addLeadDecision('wechat.article_opened', $trigger);
-
-            $trigger = array(
-                'label'       => 'mautic.wechat.campaign.event.article_shared',
-                'description' => 'mautic.wechat.campaign.event.article_shared_descr',
-            );
-            $event->addLeadDecision('wechat.article_shared', $trigger);
         }
     }
 }

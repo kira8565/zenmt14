@@ -20,6 +20,7 @@ class MessageType extends AbstractType
     private $translator;
     private $em;
     private $request;
+    private $repo;
 
     /**
      * @param MauticFactory $factory
@@ -29,6 +30,7 @@ class MessageType extends AbstractType
         $this->translator   = $factory->getTranslator();
         $this->em           = $factory->getEntityManager();
         $this->request      = $factory->getRequest();
+        $this->repo      = $factory->getModel('wechat.message')->getRepository();
     }
 
     /**
@@ -99,15 +101,53 @@ class MessageType extends AbstractType
     /**
      * @param OptionsResolverInterface $resolver
      */
+    // public function setDefaultOptions(OptionsResolverInterface $resolver)
+    // {
+    //     $resolver->setDefaults(
+    //         array(
+    //             'data_class' => 'Mautic\WechatBundle\Entity\Message'
+    //         )
+    //     );
+
+    //     $resolver->setOptional(array('update_select'));
+    // }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
+        $repo      = $this->repo;
+
         $resolver->setDefaults(
             array(
-                'data_class' => 'Mautic\WechatBundle\Entity\Message'
+                'choices'     => function (Options $options) use ($repo) {
+                    static $choices;
+
+                    if (is_array($choices)) {
+                        return $choices;
+                    }
+
+                    $choices = array();
+
+                    $accounts  = $repo->getAccountList('', 0, 0);
+                    foreach ($accounts as $account) {
+                        $choices[$account['id']] = $account['name'];
+                    }
+
+                    return $choices;
+                },
+                'expanded'    => false,
+                'multiple'    => true,
+                'required'    => false,
+                'empty_value' => function (Options $options) {
+                    return (empty($options['choices'])) ? 'mautic.wechat.no.accounts.note' : 'mautic.core.form.chooseone';
+                },
+                'disabled'    => function (Options $options) {
+                    return (empty($options['choices']));
+                },
             )
         );
-
-        $resolver->setOptional(array('update_select'));
     }
 
     /**

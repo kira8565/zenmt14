@@ -310,6 +310,25 @@ class CampaignRepository extends CommonRepository
         return $campaigns;
     }
 
+    public function findByCampaignId($campaignId)
+    {
+        $q = $this->getEntityManager()->getConnection()->createQueryBuilder()
+            ->select('cwa.wechat_account_id')
+            ->from(MAUTIC_TABLE_PREFIX.'campaign_wechat_account_xref', 'cwa')
+            ->join('cwa', MAUTIC_TABLE_PREFIX.'campaigns', 'c', 'c.id = cwa.campaign_id');
+        $q->where(
+            $q->expr()->eq('c.id', $campaignId)
+        );
+
+        $accountIds = $q->execute()->fetchAll();
+
+        if (!isset($accountIds) || count($accountIds) == 0) {
+            return null;
+        } else {
+            return $accountIds;
+        }
+    }
+
     /**
      * @return string
      */
