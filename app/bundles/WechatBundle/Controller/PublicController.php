@@ -24,11 +24,11 @@ class PublicController extends FormController
      */
     public function eventAgentAction($entity = null)
     {
-        $model = $this->factory->getModel('wechat.stat');
+        $model = $this->factory->getModel('wechat');
 
-        if (! $entity instanceof Stat) {
+        if (!$entity instanceof Stat) {
             /** @var \Mautic\WechatBundle\Entity\Wechat $entity */
-            $entity  = $model->getEntity();
+            $entity  = $model->getEntity('Stat');
         }
 
         $request = $this->request;

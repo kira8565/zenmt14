@@ -24,11 +24,11 @@ class NewsController extends FormController
      */
     public function newAction($entity = null)
     {
-        $model = $this->factory->getModel('wechat.news');
+        $model = $this->factory->getModel('wechat');
 
-        if (! $entity instanceof News) {
+        if (!$entity instanceof News) {
             /** @var \Mautic\WechatBundle\Entity\Wechat $entity */
-            $entity  = $model->getEntity();
+            $entity  = $model->getEntity('News');
         }
 
         $method  = $this->request->getMethod();

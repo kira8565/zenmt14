@@ -24,11 +24,11 @@ class MessageController extends FormController
      */
     public function newAction($entity = null)
     {
-        $model = $this->factory->getModel('wechat.message');
+        $model = $this->factory->getModel('wechat');
 
-        if (! $entity instanceof Message) {
+        if (!$entity instanceof Message) {
             /** @var \Mautic\WechatBundle\Entity\Wechat $entity */
-            $entity  = $model->getEntity();
+            $entity  = $model->getEntity('Message');
         }
 
         $method  = $this->request->getMethod();

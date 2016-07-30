@@ -13,12 +13,14 @@ use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\GraphHelper;
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\WechatBundle\Swiftmailer\Exception\BatchQueueMaxException;
-use Mautic\WechatBundle\Entity\DoNotWechat;
+
 use Mautic\WechatBundle\Entity\Account;
 use Mautic\WechatBundle\Entity\Article;
 use Mautic\WechatBundle\Entity\Message;
 use Mautic\WechatBundle\Entity\News;
+use Mautic\WechatBundle\Entity\Openid;
 use Mautic\WechatBundle\Entity\Stat;
+
 use Mautic\WechatBundle\Event\WechatBuilderEvent;
 use Mautic\WechatBundle\Event\WechatEvent;
 use Mautic\WechatBundle\Event\WechatOpenEvent;
@@ -42,12 +44,12 @@ class WechatModel extends FormModel
     /**
      * @return \Mautic\WechatBundle\Entity\Repository
      */
-    public function getRepository($name = null)
+    public function getRepository($type = null)
     {
-        if (empty($name)){
+        if (empty($type)){
             return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:Account');
         }else{
-            return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:' . $name);
+            return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:' . ucfirst($type));
         }
     }
 
@@ -59,6 +61,28 @@ class WechatModel extends FormModel
         return 'wechat:wechats';
     }
 
+    /**
+     *
+     * @param string $type, $id
+     *
+     * @return null|Entity
+     */
+    public function getEntity($type, $id = null)
+    {
+        if ($type == null){
+            return null;
+        }
+        $type = 'Mautic\\WechatBundle\\Entity\\' . ucfirst($type);
+        if ($id === null) {
+            $entity = new $type;
+        } else {
+            $entity = $this->getRepository($type)->getEntity($id);
+        }
+
+        $this->factory->getLogger()->error('+++++++++getEntity name:' . $entity->_getName());
+
+        return $entity;
+    }
 
     /**
      * {@inheritdoc}
@@ -68,7 +92,7 @@ class WechatModel extends FormModel
      *
      * @return mixed
      */
-    public function _saveEntity ($name, Account $entity, $unlock = true)
+    public function saveEntity ($entity, $unlock = true)
     {
         $now = new DateTimeHelper();
 
@@ -85,43 +109,43 @@ class WechatModel extends FormModel
         $this->setTimestamps($entity, $isNew, $unlock);
 
         $event = $this->dispatchEvent("pre_save", $entity, $isNew);
-        $this->getRepository($name)->saveEntity($entity);
+        $this->getRepository($entity->_getName())->saveEntity($entity);
         $this->dispatchEvent("post_save", $entity, $isNew, $event);
     }
 
     /**
-     * {@inheritdoc}
+     * Save an array of entities
      *
-     * @param Wechat $entity
-     * @param       $unlock
+     * @param  $entities
+     * @param  $unlock
      *
-     * @return mixed
+     * @return array
      */
-    public function saveEntity ($entity, $unlock = true)
+    public function saveEntities ($entities, $unlock = true)
     {
-        if ($entity instanceof Account){
+        //iterate over the results so the events are dispatched on each delete
+        $batchSize = 20;
+        foreach ($entities as $k => $entity) {
+            $isNew = ($entity->getId()) ? false : true;
 
-            _saveEntity ('Account', $entity, $unlock);
+            //set some defaults
+            $this->setTimestamps($entity, $isNew, $unlock);
 
-        }elseif($entity instanceof Article){
+            if ($dispatchEvent = $entity instanceof Wechat) {
+                $event = $this->dispatchEvent("pre_save", $entity, $isNew);
+            }
 
-            _saveEntity ('Article', $entity, $unlock);
+            $this->getRepository($entity->_getName())->saveEntity($entity, false);
 
-        }elseif($entity instanceof Message){
+            if ($dispatchEvent) {
+                $this->dispatchEvent("post_save", $entity, $isNew, $event);
+            }
 
-            _saveEntity ('Message', $entity, $unlock);
-
-        }elseif($entity instanceof News){
-
-            _saveEntity ('News', $entity, $unlock);
-
-        }elseif($entity instanceof Stat){
-
-            _saveEntity ('Stat', $entity, $unlock);
-
-        }else{
-            return;
+            if ((($k + 1) % $batchSize) === 0) {
+                $this->em->flush();
+            }
         }
+        $this->em->flush();
     }
 
     /**
@@ -133,30 +157,8 @@ class WechatModel extends FormModel
      */
     public function deleteEntity($entity)
     {
-        if ($entity instanceof Account){
-
-            $this->getRepository('Account')->nullVariantParent($entity->getId());
-            return $this->getRepository('Account')->deleteEntity($entity);
-
-        }elseif($entity instanceof Article){
-
-            return $this->getRepository('Article')->deleteEntity($entity);
-
-        }elseif($entity instanceof Message){
-
-            return $this->getRepository('Message')->deleteEntity($entity);
-
-        }elseif($entity instanceof News){
-
-            return $this->getRepository('News')->deleteEntity($entity);
-
-        }elseif($entity instanceof Stat){
-
-            return $this->getRepository('Stat')->deleteEntity($entity);
-
-        }else{
-            return;
-        }
+        $this->getRepository($entity->_getName())->nullVariantParent($entity->getId());
+        return $this->getRepository($entity->_getName())->deleteEntity($entity);
     }
 
     /**
@@ -172,6 +174,7 @@ class WechatModel extends FormModel
      */
      public function createForm ($entity, $formFactory, $action = null, $options = array())
      {
+        $this->factory->getLogger()->error('----createForm entity entity:' . $entity->_getName());
         if ((!$entity instanceof Account) &&
             (!$entity instanceof Article) &&
             (!$entity instanceof Message) &&
@@ -183,23 +186,11 @@ class WechatModel extends FormModel
         if (!empty($action)) {
             $options['action'] = $action;
         }
-         return $formFactory->create($entity->getName, $entity, $options);
+
+        return $formFactory->create(strtolower($entity->_getName()), $entity, $options);
      }
 
-    /**
-     *
-     * @param string $type, $id
-     *
-     * @return null|Entity
-     */
-    public function getEntity($type, $id = null)
-    {
-        if ($id === null) {
-            return null;
-        }
 
-        return $this->getRepository($type)->getEntity($id);
-    }
 
     /**
      *
@@ -272,7 +263,42 @@ class WechatModel extends FormModel
         $eventType = $event->getEventType();
 
         if ($eventType == 'account_followed') {
+            $leadModel = $this->factory->getModel('lead');
 
+            $openId = $stat->getOpenId();
+            $originalId = $stat->getOriginalId();
+
+            $openidRepo = $this->getRepository('Openid');
+            $ary = $openidRepo->findByOpenId($openId);
+
+            if (count($ary) == 0) {
+                $lead = new Lead();
+                $lead->setNewlyCreated(true);
+                $lead->setLastActive(new \DateTime());
+                $lead->addUpdatedField('email', $openId . '@weixin.com');
+                $leadModel->saveEntity($lead, false);
+
+                $accountRepo = $this->getRepository('Account');
+                $account = $accountRepo->findByOriginalId($originalId);
+                if (isset($account)) {
+                    $leadId = $lead->getId();
+                    $accountId = $account->getId();
+                    $openidEntity = new Openid();
+                    $openidEntity->setOpenId($openId);
+                    $openidEntity->setLead($lead);
+                    $openidEntity->setAccount($account);
+                    $openidEntity->setFollowed(true);
+                    $openidRepo->saveEntity($openidEntity);
+
+                    $campaignModel = $this->factory->getModel('campaign');
+                    $campaigns = $campaignModel->getRepository()->findByWechatAccountId($accountId);
+                    if (!empty($campaigns)) {
+                        foreach ($campaigns as $campaign) {
+                            $campaignModel->addLead($campaign, $lead);
+                        }
+                    }
+                }
+            }
         } else if ($eventType == 'message_received') {
 
         } else if ($eventType == 'article_opened') {

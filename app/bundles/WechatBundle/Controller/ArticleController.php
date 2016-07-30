@@ -24,20 +24,19 @@ class ArticleController extends FormController
      */
     public function newAction($entity = null)
     {
-        $model = $this->factory->getModel('wechat.article');
+        $model = $this->factory->getModel('wechat');
 
-        if (! $entity instanceof Article) {
-            /** @var \Mautic\WechatBundle\Entity\Wechat $entity */
-            $entity  = $model->getEntity();
+        if (!$entity instanceof Article) {
+            /** @var \Mautic\WechatBundle\Entity\Article $entity */
+            $entity  = $model->getEntity('Article');
         }
 
         $method  = $this->request->getMethod();
-        $session = $this->factory->getSession();
 
         //set the page we came from
-        $page   = $session->get('mautic.wechat.page', 1);
         $action = $this->generateUrl('mautic_wechat_article_action', array('objectAction' => 'new'));
 
+        // $this->factory->getLogger()->error('+++++++++++++model:' . $model->getPermissionBase());
         //create the form
         $form = $model->createForm($entity, $this->get('form.factory'), $action, array('csrf_protection' => false));
 

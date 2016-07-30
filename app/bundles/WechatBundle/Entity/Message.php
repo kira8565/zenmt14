@@ -193,4 +193,12 @@ class Message extends FormEntity
     {
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public function _getName()
+    {
+        return 'Message';
+    }
 }

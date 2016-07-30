@@ -20,7 +20,7 @@ class AccountListType extends AbstractType
      * @param MauticFactory $factory
      */
     public function __construct(MauticFactory $factory) {
-        $this->repo      = $factory->getModel('wechat.account')->getRepository();
+        $this->repo = $factory->getModel('wechat')->getRepository('Account');
 
         $this->repo->setCurrentUser($factory->getUser());
     }

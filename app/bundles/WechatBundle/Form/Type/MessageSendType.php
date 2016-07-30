@@ -39,11 +39,11 @@ class MessageSendType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('message', 'message_list', array(
-            'label'       => 'mautic.wechat.message_followed.selectmessages',
+            'label'       => 'mautic.wechat.message_send.selectmessages',
             'label_attr'  => array('class' => 'control-label'),
             'attr'        => array(
                 'class'   => 'form-control',
-                'tooltip' => 'mautic.wechat.message_followed.selectmessages_descr',
+                'tooltip' => 'mautic.wechat.message_send.selectmessages_descr',
                 'onchange'=> 'Mautic.disabledEmailAction()'
             ),
             'multiple'    => false,

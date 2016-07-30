@@ -30,7 +30,7 @@ class MessageType extends AbstractType
         $this->translator   = $factory->getTranslator();
         $this->em           = $factory->getEntityManager();
         $this->request      = $factory->getRequest();
-        $this->repo      = $factory->getModel('wechat.message')->getRepository();
+        $this->repo      = $factory->getModel('wechat')->getRepository('Message');
     }
 
     /**

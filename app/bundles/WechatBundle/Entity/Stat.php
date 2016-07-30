@@ -383,4 +383,13 @@ class Stat extends FormEntity
         $this->content = $content;
     }
 
+
+    /**
+     * @return string
+     */
+    public function _getName()
+    {
+        return 'Stat';
+    }
+
 }

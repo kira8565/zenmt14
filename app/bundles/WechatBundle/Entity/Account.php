@@ -222,6 +222,14 @@ class Account
     {
         return $this->aes_key;
     }
+
+    /**
+     * @return string
+     */
+    public function _getName()
+    {
+        return 'Account';
+    }
 }
 
 

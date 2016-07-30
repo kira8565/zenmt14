@@ -171,4 +171,12 @@ class Openid
     {
         return $this->followed;
     }
+
+    /**
+     * @return string
+     */
+    public function _getName()
+    {
+        return 'Openid';
+    }
 }

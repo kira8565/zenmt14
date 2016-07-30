@@ -20,7 +20,7 @@ class MessageListType extends AbstractType
      * @param MauticFactory $factory
      */
     public function __construct(MauticFactory $factory) {
-        $this->repo      = $factory->getModel('wechat.message')->getRepository();
+        $this->repo = $factory->getModel('wechat')->getRepository('Message');
 
         $this->repo->setCurrentUser($factory->getUser());
     }
