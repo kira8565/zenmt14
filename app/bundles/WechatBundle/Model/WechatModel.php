@@ -205,16 +205,28 @@ class WechatModel extends FormModel
         }
 
         $data = null;
-        if (strtolower($type) == 'news'){
-            $entity = $this->getEntity('News', $id);
-            if(!empty($entity)){
-                $data = array(
-                    'title'       => $entity->getTitle(),
-                    'description' => $entity->getDescription(),
-                    'url'         => $entity->getUrl(),
-                    'image'       => $entity->getImage(),
-                );
-            }
+        $type = strtolower($type);
+
+        $this->factory->getLogger()->error('----getWechatTypeData type:' . $type);
+
+        $entity = $this->getEntity(ucfirst($type), $id);
+        if(empty($entity)){
+            return null;
+        }
+
+        if ($type == 'news'){
+            $data = array(
+                'title'       => $entity->getTitle(),
+                'description' => $entity->getDescription(),
+                'url'         => $entity->getUrl(),
+                'image'       => $entity->getImage(),
+            );
+        }else if($type == 'article'){
+            $data = array(
+                'title'       => $entity->getTitle(),
+                'author' => $entity->getAuthor(),
+                'content'         => $entity->getContent(),
+            );
         }
 
         return $data;
@@ -256,6 +268,58 @@ class WechatModel extends FormModel
         return $sendMessages;
     }
 
+    public function accountFollowedEvent($stat, $request) {
+        $leadModel = $this->factory->getModel('lead');
+
+        $openId = $stat->getOpenId();
+        $originalId = $stat->getOriginalId();
+        $openidRepo = $this->getRepository('Openid');
+        $ary = $openidRepo->findByOpenId($openId);
+        if (count($ary) == 0) {
+            $lead = new Lead();
+            $lead->setNewlyCreated(true);
+            $lead->setLastActive(new \DateTime());
+            $lead->addUpdatedField('email', $openId . '@weixin.com');
+            $leadModel->saveEntity($lead, false);
+            $accountRepo = $this->getRepository('Account');
+            $account = $accountRepo->findByOriginalId($originalId);
+            if (isset($account)) {
+                $leadId = $lead->getId();
+                $accountId = $account->getId();
+                $openidEntity = new Openid();
+                $openidEntity->setOpenId($openId);
+                $openidEntity->setLead($lead);
+                $openidEntity->setAccount($account);
+                $openidEntity->setFollowed(true);
+                $openidRepo->saveEntity($openidEntity);
+                $campaignModel = $this->factory->getModel('campaign');
+                $campaigns = $campaignModel->getRepository()->findByWechatAccountId($accountId);
+                if (!empty($campaigns)) {
+                    foreach ($campaigns as $campaign) {
+                        $campaignModel->addLead($campaign, $lead);
+                    }
+                }
+            }
+        }
+    }
+
+    public function articleOpenEvent($stat, $request) {
+        $messageId = $request->get('messageId');
+        $wechatModel = $this->factory->getModel('wechat');
+
+        $message = $wechatModel->getEntity('Message', int($messageId));
+
+        $stat->setMessage($message);
+    }
+
+    public function articleSharedEvent($stat, $request) {
+        $messageId = $request->get('messageId');
+        $wechatModel = $this->factory->getModel('wechat');
+
+        $message = $wechatModel->getEntity('Message', int($messageId));
+
+        $stat->setMessage($message);
+    }
 
     public function processWechatEvent($stat, $request) {
         $event = new WechatEvent($stat, $request);
@@ -263,48 +327,13 @@ class WechatModel extends FormModel
         $eventType = $event->getEventType();
 
         if ($eventType == 'account_followed') {
-            $leadModel = $this->factory->getModel('lead');
-
-            $openId = $stat->getOpenId();
-            $originalId = $stat->getOriginalId();
-
-            $openidRepo = $this->getRepository('Openid');
-            $ary = $openidRepo->findByOpenId($openId);
-
-            if (count($ary) == 0) {
-                $lead = new Lead();
-                $lead->setNewlyCreated(true);
-                $lead->setLastActive(new \DateTime());
-                $lead->addUpdatedField('email', $openId . '@weixin.com');
-                $leadModel->saveEntity($lead, false);
-
-                $accountRepo = $this->getRepository('Account');
-                $account = $accountRepo->findByOriginalId($originalId);
-                if (isset($account)) {
-                    $leadId = $lead->getId();
-                    $accountId = $account->getId();
-                    $openidEntity = new Openid();
-                    $openidEntity->setOpenId($openId);
-                    $openidEntity->setLead($lead);
-                    $openidEntity->setAccount($account);
-                    $openidEntity->setFollowed(true);
-                    $openidRepo->saveEntity($openidEntity);
-
-                    $campaignModel = $this->factory->getModel('campaign');
-                    $campaigns = $campaignModel->getRepository()->findByWechatAccountId($accountId);
-                    if (!empty($campaigns)) {
-                        foreach ($campaigns as $campaign) {
-                            $campaignModel->addLead($campaign, $lead);
-                        }
-                    }
-                }
-            }
+            $this->accountFollowedEvent($stat, $request);
         } else if ($eventType == 'message_received') {
-
+            $this->messageReceivedEvent($stat, $request);
         } else if ($eventType == 'article_opened') {
-
+            $this->articleOpenEvent($stat, $request);
         } else if ($eventType == 'article_shared') {
-
+            $this->articleSharedEvent($stat, $request);
         } else {
 
         }
