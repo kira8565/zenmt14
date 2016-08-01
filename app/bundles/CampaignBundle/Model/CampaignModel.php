@@ -529,7 +529,7 @@ class CampaignModel extends CommonFormModel
             case null:
                 $choices['wechats'] = array();
 
-                $repo = $this->factory->getModel('wechat.account')->getRepository();
+                $repo = $this->factory->getModel('wechat')->getRepository();
                 $repo->setCurrentUser($this->factory->getUser());
                 $accounts  = $repo->getAccountList('', 0, 0);
                 foreach ($accounts as $account) {
