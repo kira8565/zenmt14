@@ -12,7 +12,6 @@ namespace Mautic\WechatBundle\Model;
 use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\GraphHelper;
 use Mautic\CoreBundle\Model\FormModel;
-use Mautic\WechatBundle\Swiftmailer\Exception\BatchQueueMaxException;
 
 use Mautic\WechatBundle\Entity\Account;
 use Mautic\WechatBundle\Entity\Article;
@@ -20,17 +19,10 @@ use Mautic\WechatBundle\Entity\Message;
 use Mautic\WechatBundle\Entity\News;
 use Mautic\WechatBundle\Entity\Openid;
 use Mautic\WechatBundle\Entity\Stat;
-
-use Mautic\WechatBundle\Event\WechatBuilderEvent;
 use Mautic\WechatBundle\Event\WechatEvent;
-use Mautic\WechatBundle\Event\WechatOpenEvent;
 use Mautic\WechatBundle\WechatEvents;
 use Mautic\LeadBundle\Entity\DoNotContact;
 use Mautic\LeadBundle\Entity\Lead;
-use Mautic\CoreBundle\Helper\Chart\LineChart;
-use Mautic\CoreBundle\Helper\Chart\PieChart;
-use Mautic\CoreBundle\Helper\Chart\ChartQuery;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
