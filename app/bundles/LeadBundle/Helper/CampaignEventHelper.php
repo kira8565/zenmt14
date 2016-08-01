@@ -171,4 +171,16 @@ class CampaignEventHelper
             $operators[$event['properties']['operator']]['expr']
         );
     }
+
+    public static function validateTagValue(MauticFactory $factory, $event, Lead $lead)
+    {
+        if (!$lead || !$lead->getId()) {
+            return false;
+        }
+
+        $leadId = $lead->getId();
+        $tagId = $event['properties']['field_tag'];
+        //error_log("validateTagValue, leadId:$leadId, tagId:$tagId\n", 3, '/tmp/mautic.log');
+        return false;
+    }
 }

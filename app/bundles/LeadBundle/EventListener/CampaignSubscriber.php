@@ -85,5 +85,12 @@ class CampaignSubscriber extends CommonSubscriber
         );
         $event->addLeadCondition('lead.field_value', $trigger);
 
+        $trigger = array(
+            'label'       => 'mautic.lead.lead.events.tag_value',
+            'description' => 'mautic.lead.lead.events.tag_value_descr',
+            'formType'    => 'campaignevent_lead_tag_value',
+            'callback'    => '\Mautic\\LeadBundle\\Helper\\CampaignEventHelper::validateTagValue'
+        );
+        $event->addLeadCondition('lead.tag_value', $trigger);
     }
 }

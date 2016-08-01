@@ -75,4 +75,24 @@ class TagRepository extends CommonRepository
 
         return $results;
     }
+
+    public function getTagList($search = '', $limit = 10, $start = 0)
+    {
+        $q = $this->createQueryBuilder('t');
+        $q->select('partial t.{id, tag}');
+
+        if (!empty($search)) {
+            $q->andWhere($q->expr()->like('t.tag', ':search'))
+                ->setParameter('search', "{$search}%");
+        }
+
+        $q->orderBy('t.tag');
+
+        if (!empty($limit)) {
+            $q->setFirstResult($start)
+                ->setMaxResults($limit);
+        }
+
+        return $q->getQuery()->getArrayResult();
+    }
 }
