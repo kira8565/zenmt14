@@ -47,7 +47,7 @@ class WechatModel extends FormModel
     public function getRepository($type = null)
     {
         if (empty($type)){
-            return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:Account');
+            parent::getRepository();
         }else{
             return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:' . ucfirst($type));
         }
@@ -72,8 +72,9 @@ class WechatModel extends FormModel
         if ($type == null){
             return null;
         }
-        $type = 'Mautic\\WechatBundle\\Entity\\' . ucfirst($type);
         if ($id === null) {
+            $type = 'Mautic\\WechatBundle\\Entity\\' . ucfirst($type);
+
             $entity = new $type;
         } else {
             $entity = $this->getRepository($type)->getEntity($id);
@@ -82,83 +83,6 @@ class WechatModel extends FormModel
         $this->factory->getLogger()->error('+++++++++getEntity name:' . $entity->_getName());
 
         return $entity;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @param Wechat $entity
-     * @param       $unlock
-     *
-     * @return mixed
-     */
-    public function saveEntity ($entity, $unlock = true)
-    {
-        $now = new DateTimeHelper();
-
-        //set the author for new pages
-        if (!$entity->isNew()) {
-            //increase the revision
-            $revision = $entity->getRevision();
-            $revision++;
-            $entity->setRevision($revision);
-        }
-
-        $isNew = $this->isNewEntity($entity);
-        //set some defaults
-        $this->setTimestamps($entity, $isNew, $unlock);
-
-        $event = $this->dispatchEvent("pre_save", $entity, $isNew);
-        $this->getRepository($entity->_getName())->saveEntity($entity);
-        $this->dispatchEvent("post_save", $entity, $isNew, $event);
-    }
-
-    /**
-     * Save an array of entities
-     *
-     * @param  $entities
-     * @param  $unlock
-     *
-     * @return array
-     */
-    public function saveEntities ($entities, $unlock = true)
-    {
-        //iterate over the results so the events are dispatched on each delete
-        $batchSize = 20;
-        foreach ($entities as $k => $entity) {
-            $isNew = ($entity->getId()) ? false : true;
-
-            //set some defaults
-            $this->setTimestamps($entity, $isNew, $unlock);
-
-            if ($dispatchEvent = $entity instanceof Wechat) {
-                $event = $this->dispatchEvent("pre_save", $entity, $isNew);
-            }
-
-            $this->getRepository($entity->_getName())->saveEntity($entity, false);
-
-            if ($dispatchEvent) {
-                $this->dispatchEvent("post_save", $entity, $isNew, $event);
-            }
-
-            if ((($k + 1) % $batchSize) === 0) {
-                $this->em->flush();
-            }
-        }
-        $this->em->flush();
-    }
-
-    /**
-     * Delete an entity
-     *
-     * @param object $entity
-     *
-     * @return void
-     */
-    public function deleteEntity($entity)
-    {
-        $this->getRepository($entity->_getName())->nullVariantParent($entity->getId());
-        return $this->getRepository($entity->_getName())->deleteEntity($entity);
     }
 
     /**
