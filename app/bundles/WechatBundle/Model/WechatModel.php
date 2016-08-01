@@ -39,7 +39,7 @@ class WechatModel extends FormModel
     public function getRepository($type = null)
     {
         if (empty($type)){
-            parent::getRepository();
+            return parent::getRepository();
         }else{
             return $this->factory->getEntityManager()->getRepository('MauticWechatBundle:' . ucfirst($type));
         }
@@ -139,9 +139,14 @@ class WechatModel extends FormModel
             );
         }else if($type == 'article'){
             $data = array(
-                'title'       => $entity->getTitle(),
-                'author' => $entity->getAuthor(),
-                'content'         => $entity->getContent(),
+                'title'             => $entity->getTitle(),
+                'author'            => $entity->getAuthor(),
+                'content'           => $entity->getContent(),
+                'content'           => $entity->getContent(),
+                'thumb_media_id'    => $entity->getThumbMediaId(),
+                'digest'            => $entity->getDigest(),
+                'source_url'        => $entity->getSourceUrl(),
+                'show_cover'        => $entity->getShowCover(),
             );
         }
 

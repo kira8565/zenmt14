@@ -45,6 +45,26 @@ class Article extends FormEntity
     /**
      * @var string
      */
+    private $thumbMediaId;
+
+    /**
+     * @var string
+     */
+    private $digest;
+
+    /**
+     * @var string
+     */
+    private $sourceUrl;
+
+    /**
+     * @var string
+     */
+    private $showCover;
+
+    /**
+     * @var string
+     */
     private $tags;
 
     /**
@@ -74,6 +94,25 @@ class Article extends FormEntity
             ->build();
 
         $builder->createField('content', 'string')
+            ->nullable()
+            ->build();
+
+        $builder->createField('thumbMediaId', 'string')
+            ->columnName('thumb_media_id')
+            ->nullable()
+            ->build();
+
+        $builder->createField('digest', 'string')
+            ->nullable()
+            ->build();
+
+        $builder->createField('sourceUrl', 'string')
+            ->columnName('source_url')
+            ->nullable()
+            ->build();
+
+        $builder->createField('showCover', 'string')
+            ->columnName('show_cover')
             ->nullable()
             ->build();
 
@@ -172,6 +211,72 @@ class Article extends FormEntity
     public function setContent($content)
     {
         $this->content = $content;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getThumbMediaId()
+    {
+        return $this->thumbMediaId;
+    }
+
+    /**
+     * @param mixed $thumbMediaId
+     */
+    public function setThumbMediaId($thumbMediaId)
+    {
+        $this->thumbMediaId = $thumbMediaId;
+    }
+
+    private $sourceUrl;
+    private $showCover;
+    /**
+     * @return mixed
+     */
+    public function getDigest()
+    {
+        return $this->digest;
+    }
+
+    /**
+     * @param mixed $digest
+     */
+    public function setDigest($digest)
+    {
+        $this->digest = $digest;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSourceUrl()
+    {
+        return $this->sourceUrl;
+    }
+
+    /**
+     * @param mixed $sourceUrl
+     */
+    public function setSourceUrl($sourceUrl)
+    {
+        $this->sourceUrl = $sourceUrl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShowCover()
+    {
+        return $this->showCover;
+    }
+
+    /**
+     * @param mixed $showCover
+     */
+    public function setShowCover($showCover)
+    {
+        $this->showCover = $showCover;
     }
 
     /**

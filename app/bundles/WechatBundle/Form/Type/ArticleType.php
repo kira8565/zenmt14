@@ -76,6 +76,44 @@ class ArticleType extends AbstractType
                 'attr'       => array('class' => 'form-control')
             )
         );
+
+        $builder->add(
+            'thumbMediaId',
+            'text',
+            array(
+                'label'      => 'mautic.wechat.form.thumbMediaId',
+                'label_attr' => array('class' => 'control-label'),
+                'attr'       => array('class' => 'form-control')
+            )
+        );
+        $builder->add(
+            'digest',
+            'text',
+            array(
+                'label'      => 'mautic.wechat.form.digest',
+                'label_attr' => array('class' => 'control-label'),
+                'attr'       => array('class' => 'form-control')
+            )
+        );
+        $builder->add(
+            'sourceUrl',
+            'text',
+            array(
+                'label'      => 'mautic.wechat.form.sourceUrl',
+                'label_attr' => array('class' => 'control-label'),
+                'attr'       => array('class' => 'form-control')
+            )
+        );
+        $builder->add(
+            'showCover',
+            'text',
+            array(
+                'label'      => 'mautic.wechat.form.showCover',
+                'label_attr' => array('class' => 'control-label'),
+                'attr'       => array('class' => 'form-control')
+            )
+        );
+
         $builder->add(
             'tags',
             'text',
