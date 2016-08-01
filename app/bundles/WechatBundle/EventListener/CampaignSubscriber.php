@@ -5,6 +5,8 @@ namespace Mautic\WechatBundle\EventListener;
 use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\CampaignBundle\Event\CampaignBuilderEvent;
 use Mautic\CampaignBundle\CampaignEvents;
+use Mautic\WechatBundle\WechatEvents;
+use Mautic\WechatBundle\Event\WechatEvent;
 
 /*
  * Class CampaignSubscriber
@@ -19,6 +21,7 @@ class CampaignSubscriber extends CommonSubscriber
     public static function getSubscribedEvents()
     {
         return array(
+            WechatEvents::WECHAT_ON_ARTICLE_OPENED => array('onWechatArticleOpened', 0),
             CampaignEvents::CAMPAIGN_ON_BUILD => array('onCampaignBuild', 0)
         );
     }
@@ -52,8 +55,17 @@ class CampaignSubscriber extends CommonSubscriber
             $trigger = array(
                 'label'       => 'mautic.wechat.campaign.event.article_opened',
                 'description' => 'mautic.wechat.campaign.event.article_opened_descr',
+                'callback'         => array('\Mautic\WechatBundle\Helper\WechatHelper', 'validateOpenedArticle'),
             );
             $event->addLeadDecision('wechat.article_opened', $trigger);
         }
     }
+
+    public function onWechatArticleOpened(WechatEvent $event)
+    {
+        $this->factory->getLogger()->error('--------onWechatArticleOpened');
+        $stat = $event->getStat();
+        $this->factory->getModel('campaign')->triggerEvent('wechat.article_opened', $stat, 'wechat.article_opened' . $stat->getId());
+    }
+
 }

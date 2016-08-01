@@ -227,13 +227,27 @@ class WechatModel extends FormModel
         }
     }
 
-    public function articleOpenEvent($stat, $request) {
-        $messageId = $request->get('messageId');
-        $wechatModel = $this->factory->getModel('wechat');
+    public function articleOpenedEvent($stat, $request) {
+        $content = $request->get('content');
+        $stat->setContent($content);
 
-        $message = $wechatModel->getEntity('Message', int($messageId));
+        $openId = $stat->getOpenId();
+        $originalId = $stat->getOriginalId();
+        $openidRepo = $this->getRepository('Openid');
 
-        $stat->setMessage($message);
+        $ary = $openidRepo->findByOpenId($openId);
+        if (count($ary) > 0) {
+            $openid = $openidRepo->getEntity($ary[0]['id']);
+            $leadId = $openid->getLead()->getId();
+            $this->factory->getLogger()->error('--------articleOpenedEvent, leadId:' . strval($leadId));
+            $leadModel = $this->factory->getModel('lead');
+            $lead = $leadModel->getEntity($leadId);
+            $leadModel->setCurrentLead($lead);
+            if ($this->dispatcher->hasListeners(WechatEvents::WECHAT_ON_ARTICLE_OPENED)) {
+                $event = new WechatEvent($stat, $request);
+                $this->dispatcher->dispatch(WechatEvents::WECHAT_ON_ARTICLE_OPENED, $event);
+            }
+        }
     }
 
     public function articleSharedEvent($stat, $request) {
@@ -245,17 +259,17 @@ class WechatModel extends FormModel
         $stat->setMessage($message);
     }
 
-    public function processWechatEvent($stat, $request) {
-        $event = new WechatEvent($stat, $request);
-
-        $eventType = $event->getEventType();
+    public function processWechatEvent($stat, $request)
+    {
+        $eventType = $stat->getEventType();
+        $this->factory->getLogger()->error('--------processWechatEvent, eventType:' . $eventType);
 
         if ($eventType == 'account_followed') {
             $this->accountFollowedEvent($stat, $request);
         } else if ($eventType == 'message_received') {
             $this->messageReceivedEvent($stat, $request);
         } else if ($eventType == 'article_opened') {
-            $this->articleOpenEvent($stat, $request);
+            $this->articleOpenedEvent($stat, $request);
         } else if ($eventType == 'article_shared') {
             $this->articleSharedEvent($stat, $request);
         } else {
@@ -264,6 +278,5 @@ class WechatModel extends FormModel
 
         $this->getRepository()->saveEntity($stat);
     }
-
 
 }

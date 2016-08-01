@@ -93,4 +93,14 @@ class WechatHelper
             'status' => 'mautic.wechat.timeline.status.delivered',
         );
     }
+
+    public static function validateOpenedArticle($eventDetails = null, $event, $factory)
+    {
+        $factory->getLogger()->info('-------validateOpenedArticle, begin');
+        if ($eventDetails == null) {
+            return false;
+        }
+
+        return true;
+    }
 }

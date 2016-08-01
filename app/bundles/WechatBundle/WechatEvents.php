@@ -17,15 +17,7 @@ namespace Mautic\WechatBundle;
  */
 final class WechatEvents
 {
-    /**
-     * The mautic.wechat_on_send event is thrown when a wechat is sent
-     *
-     * The event listener receives a
-     * Mautic\WechatBundle\Event\WechatSendEvent instance.
-     *
-     * @var string
-     */
-    const WECHAT_ON_SEND = 'mautic.wechat_on_send';
+    const WECHAT_ON_ARTICLE_OPENED = 'mautic.wechat_on_article_opened';
 
     /**
      * The mautic.wechat_pre_save event is thrown right before a wechat is persisted.
