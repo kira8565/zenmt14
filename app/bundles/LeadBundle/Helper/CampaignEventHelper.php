@@ -180,7 +180,11 @@ class CampaignEventHelper
 
         $leadId = $lead->getId();
         $tagId = $event['properties']['field_tag'];
-        //error_log("validateTagValue, leadId:$leadId, tagId:$tagId\n", 3, '/tmp/mautic.log');
+        $tagIds = $factory->getModel('lead')->getRepository()->getTagsByLeadId($leadId);
+        if (isset($tagId) && count($tagIds) > 0 && in_array($tagId, $tagIds)) {
+            $s = print_r($tagIds, true);
+            return true;
+        }
         return false;
     }
 }
