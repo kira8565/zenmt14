@@ -11,11 +11,12 @@ namespace Mautic\WechatBundle\Api;
 use Joomla\Http\Response;
 use Mautic\CoreBundle\Factory\MauticFactory;
 use Mautic\LeadBundle\Entity\Lead;
-use Mautic\WechatBundle\Entity;
-use Mautic\WechatBundle\Entity\Article;
-use Mautic\WechatBundle\Entity\News;
+use Mautic\WechatBundle\Entity\Account;
+use Mautic\WechatBundle\Entity\Article as MessageArticle;
+use Mautic\WechatBundle\Entity\News as MessageNews;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Message\News;
+use EasyWeChat\Message\Article;
 
 class WechatApi extends AbstractWechatApi
 {
@@ -80,8 +81,8 @@ class WechatApi extends AbstractWechatApi
     }
 
 
-    function assemblyNews(News $entity){
-        if (!$entity instanceof News){
+    protected function assemblyNews(MessageNews $entity){
+        if (!$entity instanceof MessageNews){
             return null;
         }
 
@@ -93,8 +94,8 @@ class WechatApi extends AbstractWechatApi
                     ]);
     }
 
-    function assemblyArticle(Article $entity){
-        if (!$entity instanceof Article){
+    protected function assemblyArticle(MessageArticle $entity){
+        if (!$entity instanceof MessageArticle){
             return null;
         }
 
@@ -106,12 +107,12 @@ class WechatApi extends AbstractWechatApi
                     'thumb_media_id'    => $entity->getThumbMediaId(),
                     'digest'            => $entity->getDigest(),
                     'source_url'        => $entity->getSourceUrl(),
-                    'show_cover'        => $entity->getShowCover,
+                    'show_cover'        => $entity->getShowCover(),
                     ]);
     }
 
-    function assemblyWechatData(array $data = null){
-        if (empty($data){
+    protected function assemblyWechatData($data = []){
+        if (empty($data)){
             return null;
         }
 
@@ -119,13 +120,13 @@ class WechatApi extends AbstractWechatApi
         foreach($data as $key => $value){
             $type = empty($value->_getName()) ? '' : strtolower($value->_getName());
             if ($type == 'news'){
-                $news = assemblyNews($value);
+                $news = $this->assemblyNews($value);
                 if (!empty($news)){
                     array_push($sendMessages,$news);
                 }
 
             }else if($type == 'article'){
-                $article = assemblyArticle($value);
+                $article = $this->assemblyArticle($value);
                 if (!empty($article)){
                     array_push($sendMessages,$article);
                 }
@@ -134,6 +135,8 @@ class WechatApi extends AbstractWechatApi
             }
 
         }
+
+       return $sendMessages;
     }
 
     /**

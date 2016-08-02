@@ -180,7 +180,7 @@ class WechatModel extends FormModel
 
         $sendMessages = array();
         foreach ($contentArr as $key => $value) {
-            $msgEntity = $this->getEntity($value->type, $valud->id);
+            $msgEntity = $this->getEntity($value->type, $value->id);
             if (!empty($msgEntity)){
                 array_push($sendMessages, $msgEntity);
             }
