@@ -229,8 +229,6 @@ class Article extends FormEntity
         $this->thumbMediaId = $thumbMediaId;
     }
 
-    private $sourceUrl;
-    private $showCover;
     /**
      * @return mixed
      */

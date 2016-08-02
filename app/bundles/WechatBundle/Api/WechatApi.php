@@ -11,7 +11,9 @@ namespace Mautic\WechatBundle\Api;
 use Joomla\Http\Response;
 use Mautic\CoreBundle\Factory\MauticFactory;
 use Mautic\LeadBundle\Entity\Lead;
-use Mautic\WechatBundle\Entity\Account;
+use Mautic\WechatBundle\Entity;
+use Mautic\WechatBundle\Entity\Article;
+use Mautic\WechatBundle\Entity\News;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Message\News;
 
@@ -77,6 +79,63 @@ class WechatApi extends AbstractWechatApi
         return new Application($options);
     }
 
+
+    function assemblyNews(News $entity){
+        if (!$entity instanceof News){
+            return null;
+        }
+
+        return new News([
+                    'title'       => $entity->getTitle(),
+                    'description' => $entity->getDescription(),
+                    'url'         => $entity->getUrl(),
+                    'image'       => $entity->getImage(),
+                    ]);
+    }
+
+    function assemblyArticle(Article $entity){
+        if (!$entity instanceof Article){
+            return null;
+        }
+
+        return new Article([
+                    'title'             => $entity->getTitle(),
+                    'author'            => $entity->getAuthor(),
+                    'content'           => $entity->getContent(),
+                    'content'           => $entity->getContent(),
+                    'thumb_media_id'    => $entity->getThumbMediaId(),
+                    'digest'            => $entity->getDigest(),
+                    'source_url'        => $entity->getSourceUrl(),
+                    'show_cover'        => $entity->getShowCover,
+                    ]);
+    }
+
+    function assemblyWechatData(array $data = null){
+        if (empty($data){
+            return null;
+        }
+
+        $sendMessages = array();
+        foreach($data as $key => $value){
+            $type = empty($value->_getName()) ? '' : strtolower($value->_getName());
+            if ($type == 'news'){
+                $news = assemblyNews($value);
+                if (!empty($news)){
+                    array_push($sendMessages,$news);
+                }
+
+            }else if($type == 'article'){
+                $article = assemblyArticle($value);
+                if (!empty($article)){
+                    array_push($sendMessages,$article);
+                }
+            }else{
+                //do nothing
+            }
+
+        }
+    }
+
     /**
      * @param Mautic\WechatBundle\Entity Account
      * @param string $number
@@ -88,10 +147,11 @@ class WechatApi extends AbstractWechatApi
     {
 
         $app = $this->getWechatApp($account);
-        $sendMessages = array();
-        foreach($data as $key => $value){
-            array_push($sendMessages, new News($value));
+        $sendMessages = $this->assemblyWechatData($data);
+        if (empty($sendMessages)){
+            return;
         }
+
         return $app->staff->message($sendMessages)->to($openId)->send();
     }
 }
